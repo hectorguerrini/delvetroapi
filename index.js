@@ -3,7 +3,8 @@ var app = express();
 const port = 3000
 
 var bodyParser = require('body-parser');
-
+var moment = require('moment');
+moment.locale('pt-br');
 var app = express();
 
 app.use(bodyParser.json());
@@ -29,8 +30,8 @@ app.post('/listaVendas', (req, res) => {
             ven_status, vei_codigo, c.pro_codigo, pro_nome, pro_categoria, pro_setor, vei_med1 altura,
             vei_med2 largura, VEI_QTDE metro, VEI_SUBQTDE qtde
         FROM vendas AS a
-        INNER JOIN vendasitens b ON a.ven_codigo = b.ven_codigo
-        INNER JOIN produtos c ON c.pro_codigo = b.pro_codigo        
+        LEFT JOIN vendasitens b ON a.ven_codigo = b.ven_codigo
+        LEFT JOIN produtos c ON c.pro_codigo = b.pro_codigo        
         WHERE 
             ven_data >= '${req.body.dataMin}' AND ven_data <= '${req.body.dataMax}'
             ${req.body.cliente ? `AND VEN_RESPONSAVEL LIKE '%${req.body.cliente.toUpperCase()}%'`: '' } 
@@ -50,7 +51,7 @@ app.post('/listaVendas', (req, res) => {
                         pro_setor: el.PRO_SETOR,
                         altura: el.ALTURA,
                         largura: el.LARGURA,
-                        metro: el.ALTURA*el.LARGURA ? el.METRO : 0,
+                        metro: el.ALTURA * el.LARGURA ? el.METRO : 0,
                         qtde: el.QTDE
                     }
                     jsonRetorno[index].produtos.push(json);
@@ -58,7 +59,7 @@ app.post('/listaVendas', (req, res) => {
                     let json = {
                         ven_codigo: el.VEN_CODIGO,
                         ven_data: el.VEN_DATA,
-                        ven_hora: el.VEN_HORA,                        
+                        ven_hora: el.VEN_HORA,
                         con_codigo: el.CON_CODIGO,
                         ven_responsavel: el.VEN_RESPONSAVEL,
                         ven_status: el.VEN_STATUS,
@@ -73,7 +74,7 @@ app.post('/listaVendas', (req, res) => {
                             pro_setor: el.PRO_SETOR,
                             altura: el.ALTURA,
                             largura: el.LARGURA,
-                            metro: el.ALTURA*el.LARGURA ? el.METRO : 0,
+                            metro: el.ALTURA * el.LARGURA ? el.METRO : 0,
                             qtde: el.QTDE
                         }],
                         caixa: []
@@ -98,24 +99,61 @@ app.post('/listaCaixa', (req, res) => {
         WHERE 
             ven_data >= '${req.body.dataMin}' AND ven_data <= '${req.body.dataMax}'
             ${req.body.cliente ? `AND VEN_RESPONSAVEL LIKE '%${req.body.cliente.toUpperCase()}%'`: '' } 
-        ORDER BY VEN_DATA DESC, VEN_HORA DESC`, 
+        ORDER BY VEN_DATA DESC, VEN_HORA DESC`,
         (result) => {
-        res.json(result);
-    });
+            res.json(result);
+        });
 
 });
 app.post('/cabecalho', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 1 AS id, 'Pedidos' AS label,sum(ven_total) AS valor FROM vendas
-        WHERE ven_data >= '01-01-2019' AND ven_data <= '01-31-2019'
+        WHERE ven_data >= '${req.body.dataMin}' AND ven_data <= '${req.body.dataMax}'
         UNION ALL
         SELECT 2 AS id, 'Faturamento' AS label,sum(cai_credito+cai_debito) AS valor FROM caixa
         WHERE 
             cai_pagamento >= '${req.body.dataMin}' AND cai_pagamento <= '${req.body.dataMax}' 
             AND cai_categoria IN ('VENDA','SERVICOS')            
     `,
-    (result) => {
-        res.json(result)
-    })
+        (result) => {
+            res.json(result)
+        })
+})
+app.post('/grafico/:tipo', (req, res) => {
+    let endMonth = moment(req.body.data, 'MM-DD-YYYY').endOf('month').format('MM-DD-YYYY');
+    let startMonth = moment(req.body.data, 'MM-DD-YYYY').startOf('month').format('MM-DD-YYYY');
+    let endMonthAnterior = moment(req.body.data, 'MM-DD-YYYY').subtract(1, 'month').endOf('month').format('MM-DD-YYYY');
+    let startMonthAnterior = moment(req.body.data, 'MM-DD-YYYY').subtract(1, 'month').startOf('month').format('MM-DD-YYYY');
+    let mesAtual = moment(req.body.data, 'MM-DD-YYYY').format('MMMM');
+    let mesAnterior = moment(req.body.data, 'MM-DD-YYYY').subtract(1, 'month').format('MMMM');
+    let query = '';
+    if (req.params.tipo == 'faturamento') {
+        query = `
+            select '${mesAtual}' as label,sum(cai_credito+cai_debito) AS valor from caixa
+            inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
+            where
+            cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
+            AND ven_data >= '${startMonth}' AND ven_data <= '${endMonth}'
+            AND cai_categoria IN ('VENDA','SERVICOS')            
+            UNION ALL 
+            select '${mesAnterior}' as label,sum(cai_credito+cai_debito) AS valor from caixa 
+            inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
+            where
+            cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
+            AND ven_data >= '${startMonthAnterior}' AND ven_data <= '${endMonthAnterior}'
+            AND cai_categoria IN ('VENDA','SERVICOS')            
+            UNION ALL
+            select 'Anteriores' as label,sum(cai_credito+cai_debito) AS valor from caixa 
+            inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
+            where
+            cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
+            AND ven_data < '${startMonthAnterior}'
+            AND cai_categoria IN ('VENDA','SERVICOS')            
+        `;
+    }
+    firebirdConfig.Execute(query,
+        (result) => {
+            res.json(result)
+        })
 })
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

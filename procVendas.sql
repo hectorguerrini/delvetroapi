@@ -3,8 +3,8 @@ ven_status,vei_codigo,c.pro_codigo,pro_nome,pro_categoria,pro_setor,vei_med1 alt
 VEI_SUBQTDE qtde,
 d.cai_codigo,cai_credito,cai_debito, cai_forma,cai_categoria
 from vendas as a
-inner join vendasitens b on a.ven_codigo = b.ven_codigo
-inner join produtos c on c.pro_codigo = b.pro_codigo
+left join vendasitens b on a.ven_codigo = b.ven_codigo
+left join produtos c on c.pro_codigo = b.pro_codigo
 inner join caixa d on d.cai_categoria IN ('VENDA','SERVICOS') and replace(d.cai_id,'VEN ', '')= a.ven_codigo
 WHERE ven_data >= '01-31-2019' AND ven_data <= '01-31-2019'
 ORDER BY VEN_DATA DESC, VEN_HORA DESC
