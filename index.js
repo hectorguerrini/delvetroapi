@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-const port = 3000
 
 var bodyParser = require('body-parser');
 var moment = require('moment');
@@ -22,8 +21,8 @@ var firebirdConfig = require('./firebirdConfig')();
 console.log(firebirdConfig)
 
 
-app.get('/', (req, res) => res.send('Hello Delvetro!'))
-app.post('/listaVendas', (req, res) => {
+app.get('/delvetroapi/', (req, res) => res.send('Hello Delvetro!'))
+app.post('/delvetroapi/listaVendas', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 
             a.ven_codigo, ven_data, ven_hora, con_codigo, ven_responsavel, ven_total,
@@ -89,7 +88,7 @@ app.post('/listaVendas', (req, res) => {
         });
 
 });
-app.post('/listaCaixa', (req, res) => {
+app.post('/delvetroapi/listaCaixa', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 
             a.ven_codigo, REPLACE(d.cai_id,'VEN ', '') cai_id, ven_data, ven_hora, cai_pagamento, d.cai_codigo, cai_credito, cai_debito, 
@@ -105,7 +104,7 @@ app.post('/listaCaixa', (req, res) => {
         });
 
 });
-app.post('/cabecalho', (req, res) => {
+app.post('/delvetroapi/cabecalho', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 1 AS id, 'Pedidos' AS label,sum(ven_total) AS valor FROM vendas
         WHERE ven_data >= '${req.body.dataMin}' AND ven_data <= '${req.body.dataMax}'
@@ -119,7 +118,7 @@ app.post('/cabecalho', (req, res) => {
             res.json(result)
         })
 })
-app.post('/grafico/:tipo', (req, res) => {
+app.post('/delvetroapi/grafico/:tipo', (req, res) => {
     let endMonth = moment(req.body.data, 'MM-DD-YYYY').endOf('month').format('MM-DD-YYYY');
     let startMonth = moment(req.body.data, 'MM-DD-YYYY').startOf('month').format('MM-DD-YYYY');
     let endMonthAnterior = moment(req.body.data, 'MM-DD-YYYY').subtract(1, 'month').endOf('month').format('MM-DD-YYYY');
@@ -156,4 +155,5 @@ app.post('/grafico/:tipo', (req, res) => {
             res.json(result)
         })
 })
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
