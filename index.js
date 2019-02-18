@@ -41,7 +41,7 @@ app.post('/delvetroapi/listaVendas', (req, res) => {
         FROM vendas AS a
         LEFT JOIN vendasitens b ON a.ven_codigo = b.ven_codigo
         LEFT JOIN produtos c ON c.pro_codigo = b.pro_codigo        
-        LEFT JOIN caixa ON cai_id like a.ven_codigo
+        INNER JOIN caixa ON caixa.cai_categoria IN ('VENDA','SERVICOS') and replace(caixa.cai_id,'VEN ', '')= a.ven_codigo
         WHERE 
             ven_responsavel NOT LIKE '%DEL VETRO%'
             ${req.body.pedido.filter ? ` 
