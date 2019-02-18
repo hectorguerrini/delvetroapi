@@ -115,8 +115,8 @@ app.post('/delvetroapi/listaVendas', (req, res) => {
 app.post('/delvetroapi/listaCaixa', (req, res) => {
     firebirdConfig.Execute(`
         SELECT DISTINCT
-            a.ven_codigo, REPLACE(d.cai_id,'VEN ', '') cai_id, ven_data, ven_hora, cai_pagamento, d.cai_codigo, cai_credito, cai_debito, 
-            cai_forma,cai_categoria 
+            a.ven_codigo, REPLACE(d.cai_id,'VEN ', '') cai_id, ven_data, ven_hora, cai_pagamento, d.cai_codigo,
+            cai_credito, cai_debito, cai_forma,cai_categoria 
         FROM vendas AS a
         INNER JOIN caixa d on d.cai_categoria IN ('VENDA','SERVICOS') and replace(d.cai_id,'VEN ', '')= a.ven_codigo
         WHERE 
@@ -161,21 +161,21 @@ app.post('/delvetroapi/grafico/:tipo', (req, res) => {
     let query = '';
     if (req.params.tipo == 'faturamento') {
         query = `
-            select '${mesAtual}' as label,sum(cai_credito+cai_debito) AS valor from caixa
+            select '${mesAtual}' as label,sum(cai_credito) AS valor from caixa
             inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
             where
             cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
             AND ven_data >= '${startMonth}' AND ven_data <= '${endMonth}'
             AND cai_categoria IN ('VENDA','SERVICOS')            
             UNION ALL 
-            select '${mesAnterior}' as label,sum(cai_credito+cai_debito) AS valor from caixa 
+            select '${mesAnterior}' as label,sum(cai_credito) AS valor from caixa 
             inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
             where
             cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
             AND ven_data >= '${startMonthAnterior}' AND ven_data <= '${endMonthAnterior}'
             AND cai_categoria IN ('VENDA','SERVICOS')            
             UNION ALL
-            select 'Anteriores' as label,sum(cai_credito+cai_debito) AS valor from caixa 
+            select 'Anteriores' as label,sum(cai_credito) AS valor from caixa 
             inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
             where
             cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
