@@ -20,3 +20,11 @@ UNION ALL
 SELECT 2 as id, 'Faturamento' as label,sum(cai_credito+cai_debito) as valor FROM caixa
 where cai_pagamento >= '01-01-2019' and cai_pagamento <= '01-31-2019' and cai_categoria IN ('VENDA','SERVICOS')
 
+
+SELECT ven_codigo,ven_responsavel,ven_total,SUM(cai_credito+cai_debito) AS valor,cai_pagamento FROM caixa
+            inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
+            where
+             ven_data >= '02-01-2019' AND ven_data <= '02-28-2019'
+            AND cai_categoria IN ('VENDA','SERVICOS')   
+group by ven_codigo,ven_responsavel,cai_pagamento,ven_total
+order by ven_codigo desc

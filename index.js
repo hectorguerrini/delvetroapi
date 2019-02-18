@@ -22,18 +22,41 @@ console.log(firebirdConfig)
 
 
 app.get('/delvetroapi/', (req, res) => res.send('Hello Delvetro!'))
-app.post('/delvetroapi/listaVendas', (req, res) => {
+app.post('/delvetroapi/teste',(req,res) =>{
     firebirdConfig.Execute(`
-        SELECT 
-            a.ven_codigo, ven_data, ven_hora, con_codigo, ven_responsavel, ven_total,
+        DECLARE VARIABLE nome VARCHAR(40);
+
+        nome = ${req.body.nome};
+        select nome AS name
+    `,(result) => {
+        res.json(result);
+    })
+} )
+app.post('/delvetroapi/listaVendas', (req, res) => {
+    firebirdConfig.Execute(`    
+        SELECT DISTINCT
+            a.ven_codigo, ven_data, ven_hora, a.con_codigo, ven_responsavel, ven_total, max(cai_pagamento) cai_pagamento,
             ven_status, vei_codigo, c.pro_codigo, pro_nome, pro_categoria, pro_setor, vei_med1 altura,
             vei_med2 largura, VEI_QTDE metro, VEI_SUBQTDE qtde
         FROM vendas AS a
         LEFT JOIN vendasitens b ON a.ven_codigo = b.ven_codigo
         LEFT JOIN produtos c ON c.pro_codigo = b.pro_codigo        
+        LEFT JOIN caixa ON cai_id like a.ven_codigo
         WHERE 
-            ven_data >= '${req.body.dataMin}' AND ven_data <= '${req.body.dataMax}'
+            ven_responsavel NOT LIKE '%DEL VETRO%'
+            ${req.body.pedido.filter ? ` 
+                AND ven_data >= '${req.body.pedido.dataMin}' 
+                AND ven_data <= '${req.body.pedido.dataMax}'
+            ` : ''}                         
+            ${req.body.pagamento.filter ? ` 
+                AND cai_pagamento >= '${req.body.pagamento.dataMin}' 
+                AND cai_pagamento <= '${req.body.pagamento.dataMax}'
+            ` : ''}           
             ${req.body.cliente ? `AND VEN_RESPONSAVEL LIKE '%${req.body.cliente.toUpperCase()}%'`: '' } 
+        GROUP BY 
+            a.ven_codigo, ven_data, ven_hora, a.con_codigo, ven_responsavel, ven_total,
+            ven_status, vei_codigo, c.pro_codigo, pro_nome, pro_categoria, pro_setor, vei_med1,
+            vei_med2, VEI_QTDE, VEI_SUBQTDE
         ORDER BY VEN_DATA DESC, VEN_HORA DESC `,
         (result) => {
             let jsonRetorno = []
@@ -64,6 +87,7 @@ app.post('/delvetroapi/listaVendas', (req, res) => {
                         ven_status: el.VEN_STATUS,
                         ven_total: el.VEN_TOTAL,
                         status_pagamento: 'Ñ Pago',
+                        cai_pagamento: el.CAI_PAGAMENTO,
                         qtde_pago: 0,
                         produtos: [{
                             vei_codigo: el.VEI_CODIGO,
@@ -90,13 +114,22 @@ app.post('/delvetroapi/listaVendas', (req, res) => {
 });
 app.post('/delvetroapi/listaCaixa', (req, res) => {
     firebirdConfig.Execute(`
-        SELECT 
+        SELECT DISTINCT
             a.ven_codigo, REPLACE(d.cai_id,'VEN ', '') cai_id, ven_data, ven_hora, cai_pagamento, d.cai_codigo, cai_credito, cai_debito, 
             cai_forma,cai_categoria 
         FROM vendas AS a
         INNER JOIN caixa d on d.cai_categoria IN ('VENDA','SERVICOS') and replace(d.cai_id,'VEN ', '')= a.ven_codigo
         WHERE 
-            ven_data >= '${req.body.dataMin}' AND ven_data <= '${req.body.dataMax}'
+            ven_responsavel NOT LIKE '%DEL VETRO%'
+            ${req.body.pedido.filter ? ` 
+                AND ven_data >= '${req.body.pedido.dataMin}' 
+                AND ven_data <= '${req.body.pedido.dataMax}'
+            ` : ''}             
+            
+            ${req.body.pagamento.filter ? ` 
+                AND cai_pagamento >= '${req.body.pagamento.dataMin}' 
+                AND cai_pagamento <= '${req.body.pagamento.dataMax}'
+            ` : ''}  
             ${req.body.cliente ? `AND VEN_RESPONSAVEL LIKE '%${req.body.cliente.toUpperCase()}%'`: '' } 
         ORDER BY VEN_DATA DESC, VEN_HORA DESC`,
         (result) => {
@@ -149,6 +182,17 @@ app.post('/delvetroapi/grafico/:tipo', (req, res) => {
             AND ven_data < '${startMonthAnterior}'
             AND cai_categoria IN ('VENDA','SERVICOS')            
         `;
+    } else if (req.params.tipo == 'pedidos') {
+        query = `
+            SELECT 'PAGO' as label,SUM(cai_credito+cai_debito) AS valor from caixa
+            inner join vendas on replace(cai_id,'VEN ', '') = vendas.ven_codigo
+            where
+            cai_pagamento >= '${startMonth}' AND cai_pagamento <= '${endMonth}'
+            AND ven_data >= '${startMonth}' AND ven_data <= '${endMonth}'
+            AND cai_categoria IN ('VENDA','SERVICOS')            
+            
+        `;
+
     }
     firebirdConfig.Execute(query,
         (result) => {
