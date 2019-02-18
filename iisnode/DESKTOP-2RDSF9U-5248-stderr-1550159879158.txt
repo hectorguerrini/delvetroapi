@@ -1,0 +1,8 @@
+Application has thrown an uncaught exception and is terminated:
+Error: conversion error from string "undefined"
+    at doCallback (C:\inetpub\wwwroot\delvetroapi\node_modules\node-firebird\lib\index.js:1234:18)
+    at C:\inetpub\wwwroot\delvetroapi\node_modules\node-firebird\lib\index.js:2929:21
+    at C:\inetpub\wwwroot\delvetroapi\node_modules\node-firebird\lib\messages.js:151:25
+    at search (C:\inetpub\wwwroot\delvetroapi\node_modules\node-firebird\lib\messages.js:117:13)
+    at C:\inetpub\wwwroot\delvetroapi\node_modules\node-firebird\lib\messages.js:54:21
+    at FSReqWrap.wrapper [as oncomplete] (fs.js:658:17)
