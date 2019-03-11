@@ -1,2 +1,0 @@
-{ Execute: [Function] }
-Example app listening on port \\.\pipe\7696810e-1cbc-497d-9b31-34456635bef2!
