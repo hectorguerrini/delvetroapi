@@ -32,6 +32,62 @@ app.post('/delvetroapi/teste',(req,res) =>{
         res.json(result);
     })
 } )
+app.post('/delvetroapi/fechamento', (req, res) => {
+    firebirdConfig.Execute(`
+        SELECT 
+            cai_codigo, ven_data,cai_pagamento,cai_credito,cai_debito,
+            REPLACE(cai_id,'VEN ', '') cai_id, cai_plano, ven_responsavel  
+        FROM caixa AS a
+        INNER JOIN vendas AS v ON REPLACE(a.cai_id,'VEN ', '') =  v.ven_codigo
+        WHERE 
+            cai_pagamento >= '${req.body.dataMin}'
+            AND  cai_pagamento <= '${req.body.dataMax}'
+            AND cai_categoria IN ('VENDA', 'SERVICOS')
+        ORDER BY cai_plano ASC,cai_pagamento DESC    
+    `, (result) => {
+        let jsonRetorno = [];
+        result.forEach((el) => {
+            let index = jsonRetorno.findIndex((js) => {
+                return js.formaPagamento == el.CAI_PLANO
+            });
+            if (index != -1) {
+                jsonRetorno[index].valorCredito += el.CAI_CREDITO;
+                jsonRetorno[index].valorCredito = Math.round(jsonRetorno[index].valorCredito*100)/100;
+                jsonRetorno[index].valorDebito += el.CAI_DEBITO;
+                jsonRetorno[index].valorDebito = Math.round(jsonRetorno[index].valorDebito*100)/100;
+                let json = {
+                    cliente: el.VEN_RESPONSAVEL,
+                    codigoPagamento: el.CAI_CODIGO,
+                    dataPagamento: el.CAI_PAGAMENTO,
+                    dataPedido: el.VEN_DATA,
+                    credito: el.CAI_CREDITO,
+                    debito: el.CAI_DEBITO,
+                    codigoVenda: el.CAI_ID
+                }
+                jsonRetorno[index].clientes.push(json);        
+            } else {
+                let json = {
+                    formaPagamento: el.CAI_PLANO,
+                    valorCredito: el.CAI_CREDITO,
+                    valorDebito: el.CAI_DEBITO,
+                    clientes: [
+                        {
+                            cliente: el.VEN_RESPONSAVEL,
+                            codigoPagamento: el.CAI_CODIGO,
+                            dataPagamento: el.CAI_PAGAMENTO,
+                            dataPedido: el.VEN_DATA,
+                            credito: el.CAI_CREDITO,
+                            debito: el.CAI_DEBITO,
+                            codigoVenda: el.CAI_ID                            
+                        }
+                    ]
+                }
+                jsonRetorno.push(json);
+            }
+        })
+        res.json(jsonRetorno);
+    })
+})
 app.post('/delvetroapi/listaVendas', (req, res) => {
     firebirdConfig.Execute(`    
         SELECT DISTINCT
@@ -59,7 +115,7 @@ app.post('/delvetroapi/listaVendas', (req, res) => {
             vei_med2, VEI_QTDE, VEI_SUBQTDE
         ORDER BY VEN_DATA DESC, VEN_HORA DESC `,
         (result) => {
-            let jsonRetorno = []
+            let jsonRetorno = [];
             result.forEach((el) => {
                 let index = jsonRetorno.findIndex((js) => {
                     return js.ven_codigo == el.VEN_CODIGO
