@@ -68,7 +68,7 @@ app.post('/delvetroapi/gastos', (req, res) => {
                     descricao: el.CAI_HISTORICO,
                     categoria: el.CAI_CATEGORIA
                 }
-                jsonRetorno[index].clientes.push(json);        
+                jsonRetorno[index].gastos.push(json);        
             } else {
                 let json = {
                     formaPagamento: el.CAI_PLANO,
