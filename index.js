@@ -32,6 +32,67 @@ app.post('/delvetroapi/teste',(req,res) =>{
         res.json(result);
     })
 } )
+app.post('/delvetroapi/gastos', (req, res) => {
+    firebirdConfig.Execute(`
+        SELECT 
+            cai_codigo, cai_data,cai_pagamento,
+            cai_credito,cai_debito,cai_plano,cai_forma,cai_historico
+        FROM caixa AS a        
+        WHERE 
+            cai_pagamento >= '${req.body.dataMin}'
+            AND  cai_pagamento <= '${req.body.dataMax}'
+            AND cai_categoria IN 
+            (
+                'DEBITO POR ABATIMENTO','TRANSFERÊNCIA','AGUA/LUZ/TELEFONE',
+                'DESPESAS ADMINISTRATIVAS','FRETE','SALARIO' 
+            )
+        ORDER BY cai_plano ASC,cai_pagamento DESC    
+    `, (result) => {
+        let jsonRetorno = [];
+        result.forEach((el) => {
+            let index = jsonRetorno.findIndex((js) => {
+                return js.formaPagamento == el.CAI_PLANO
+            });
+            if (index != -1) {
+                jsonRetorno[index].valorCredito += el.CAI_CREDITO;
+                jsonRetorno[index].valorCredito = Math.round(jsonRetorno[index].valorCredito*100)/100;
+                jsonRetorno[index].valorDebito += el.CAI_DEBITO;
+                jsonRetorno[index].valorDebito = Math.round(jsonRetorno[index].valorDebito*100)/100;
+                let json = {
+                    codigoPagamento: el.CAI_CODIGO,
+                    dataPagamento: el.CAI_PAGAMENTO,
+                    dataPedido: el.VEN_DATA,
+                    credito: el.CAI_CREDITO,
+                    debito: el.CAI_DEBITO,
+                    modoPagamento: el.CAI_FORMA,
+                    descricao: el.CAI_HISTORICO,
+                    categoria: el.CAI_CATEGORIA
+                }
+                jsonRetorno[index].clientes.push(json);        
+            } else {
+                let json = {
+                    formaPagamento: el.CAI_PLANO,
+                    valorCredito: el.CAI_CREDITO,
+                    valorDebito: el.CAI_DEBITO,
+                    gastos: [
+                        {                            
+                            codigoPagamento: el.CAI_CODIGO,
+                            dataPagamento: el.CAI_PAGAMENTO,
+                            dataPedido: el.VEN_DATA,
+                            credito: el.CAI_CREDITO,
+                            debito: el.CAI_DEBITO,
+                            modoPagamento: el.CAI_FORMA,
+                            descricao: el.CAI_HISTORICO,
+                            categoria: el.CAI_CATEGORIA                          
+                        }
+                    ]
+                }
+                jsonRetorno.push(json);
+            }
+        })
+        res.json(jsonRetorno);
+    })
+})
 app.post('/delvetroapi/fechamento', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 
