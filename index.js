@@ -78,7 +78,7 @@ app.post('/delvetroapi/gastos', (req, res) => {
                         {                            
                             codigoPagamento: el.CAI_CODIGO,
                             dataPagamento: el.CAI_PAGAMENTO,
-                            dataPedido: el.VEN_DATA,
+                            dataPedido: el.CAI_DATA,
                             credito: el.CAI_CREDITO,
                             debito: el.CAI_DEBITO,
                             modoPagamento: el.CAI_FORMA,
