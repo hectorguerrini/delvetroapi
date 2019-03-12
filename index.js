@@ -36,7 +36,7 @@ app.post('/delvetroapi/gastos', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 
             cai_codigo, cai_data,cai_pagamento,
-            cai_credito,cai_debito,cai_plano,cai_forma,cai_historico
+            cai_credito,cai_debito,cai_plano,cai_forma,cai_historico,cai_categoria
         FROM caixa AS a        
         WHERE 
             cai_pagamento >= '${req.body.dataMin}'
@@ -61,7 +61,7 @@ app.post('/delvetroapi/gastos', (req, res) => {
                 let json = {
                     codigoPagamento: el.CAI_CODIGO,
                     dataPagamento: el.CAI_PAGAMENTO,
-                    dataPedido: el.VEN_DATA,
+                    dataPedido: el.CAI_DATA,
                     credito: el.CAI_CREDITO,
                     debito: el.CAI_DEBITO,
                     modoPagamento: el.CAI_FORMA,
