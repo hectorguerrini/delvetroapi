@@ -31,7 +31,41 @@ app.post('/delvetroapi/teste',(req,res) =>{
     `,(result) => {
         res.json(result);
     })
-} )
+})
+
+app.post('/delvetroapi/clientes', (req, res) => {
+    firebirdConfig.Execute(`
+        SELECT 
+            caixa.con_codigo id_contato ,con_nome nome,SUM(cai_credito) valorCredito
+        FROM caixa 
+        INNER JOIN contatos ON contatos.con_codigo = caixa.con_codigo
+        WHERE 
+            cai_categoria IN ('VENDA','SERVICOS')            
+            AND cai_pagamento >= '${req.body.dataMin}'
+            AND cai_pagamento <= '${req.body.dataMax}'
+            AND con_nome like '%${req.body.clientes.toUpperCase()}%'
+            AND cai_id IS NOT NULL
+        GROUP BY caixa.con_codigo,con_nome
+        ORDER BY valorCredito DESC
+    `, (result) => {
+        let jsonRetorno = [];
+        let per1 = moment(req.body.dataMin, 'MM-DD-YYYY').format("MMMM");
+        let per2 = moment(req.body.dataMax, 'MM-DD-YYYY').format("MMMM");            
+        let periodo = per1 == per2 ? `${per1}` : `${per1} - ${per2}`;
+        result.forEach((el) => {        
+            let json = {
+                id_contato: el.ID_CONTATO,
+                nome: el.NOME,
+                valorCredito: el.VALORCREDITO,
+                periodo: periodo
+            }
+            jsonRetorno.push(json)
+        })
+        res.json(jsonRetorno);
+    })
+
+})
+
 app.post('/delvetroapi/gastos', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 
@@ -44,7 +78,14 @@ app.post('/delvetroapi/gastos', (req, res) => {
             AND cai_categoria IN 
             (
                 'DEBITO POR ABATIMENTO','TRANSFERÊNCIA','AGUA/LUZ/TELEFONE',
-                'DESPESAS ADMINISTRATIVAS','FRETE','SALARIO' 
+                'DESPESAS ADMINISTRATIVAS','FRETE','SALARIO','ALUGUEL','CHEGUES',
+                'COMBUSTIVEL','CONTABILIDADE','COMPRA','COMPRA REVENDA','MATERIA PRIMA','COPA COZINHA',
+                'CORREIOS','CREDITO CLIENTE','DESCONTOS CONCEDIDOS','DESPESAS GERAIS PRODUÇÃO',
+                'ESTACIONAMENTO','EXAME ADMISSIONAL','FGTS','HORAS EXTRA','DAS SIMPLES NACIONAL',
+                'ICMS','IMPOSTOS E TAXAS','INSS SALARIOS','INVESTIMENTO','IPTU','IRRF SALARIO',
+                'MANUTENÇÃO MAQUINAS','MATERIAL ESCRITORIO','MOTO BOY','MULTA DE TRANSITO','PEDAGIO',
+                'REFEIÇÃO','REMEDIOS','SERVICOS','SERVICOS DE PINTURA','TARIFA BANCARIA','TAXA CARTAO',
+                'TRANSFERENCIA ENTRE CONTAS','VALE TRANSPORTE'
             )
         ORDER BY cai_plano ASC,cai_pagamento DESC    
     `, (result) => {
@@ -158,7 +199,8 @@ app.post('/delvetroapi/listaVendas', (req, res) => {
         FROM vendas AS a
         LEFT JOIN vendasitens b ON a.ven_codigo = b.ven_codigo
         LEFT JOIN produtos c ON c.pro_codigo = b.pro_codigo        
-        INNER JOIN caixa ON caixa.cai_categoria IN ('VENDA','SERVICOS') and replace(caixa.cai_id,'VEN ', '')= a.ven_codigo
+        INNER JOIN caixa ON caixa.cai_categoria IN ('VENDA','SERVICOS') 
+        AND replace(caixa.cai_id,'VEN ', '')= a.ven_codigo
         WHERE 
             ven_responsavel NOT LIKE '%DEL VETRO%'
             ${req.body.pedido.filter ? ` 

@@ -28,3 +28,38 @@ SELECT ven_codigo,ven_responsavel,ven_total,SUM(cai_credito+cai_debito) AS valor
             AND cai_categoria IN ('VENDA','SERVICOS')   
 group by ven_codigo,ven_responsavel,cai_pagamento,ven_total
 order by ven_codigo desc
+
+select 
+caixa.con_codigo,con_nome,sum(cai_credito)credito,sum(cai_debito)debito,
+min(cai_data) primeiraCompra,max(cai_data) UltimoPedido,max(cai_pagamento) UltimoPagamento 
+from caixa 
+inner join contatos on contatos.con_codigo = caixa.con_codigo
+where cai_categoria in ('VENDA','SERVICOS')
+and cai_pagamento is not null
+group by caixa.con_codigo,con_nome
+order by credito desc
+
+select 
+caixa.con_codigo,con_nome,sum(cai_credito)credito,sum(cai_debito)debito,min(cai_data) primeiraCompra,
+case when datediff(month,min(cai_data),CURRENT_DATE) = 0 
+then sum(cai_credito)
+else
+    sum(cai_credito)/datediff(month,min(cai_data),CURRENT_DATE) 
+end as creditoMes
+from caixa 
+inner join contatos on contatos.con_codigo = caixa.con_codigo
+where cai_categoria in ('VENDA','SERVICOS')
+and contatos.con_codigo not in (11865,12018,12026,11874)
+and cai_pagamento is not null
+group by caixa.con_codigo,con_nome
+order by credito desc
+
+SELECT 
+caixa.con_codigo,con_nome,SUM(cai_credito)credito
+FROM caixa 
+INNER JOIN contatos ON contatos.con_codigo = caixa.con_codigo
+WHERE cai_categoria IN ('VENDA','SERVICOS')
+AND contatos.con_codigo NOT IN (11865,12018,12026,11874)
+AND cai_pagamento IS NOT NULL
+GROUP BY caixa.con_codigo,con_nome
+ORDER BY credito DESC
