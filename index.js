@@ -32,7 +32,77 @@ app.post('/delvetroapi/teste',(req,res) =>{
         res.json(result);
     })
 })
+app.post('/delvetroapi/combo/:tipo', (req, res) => {
+    let query = '';
+    if(req.params.tipo === 'cliente'){
+        query = `
+            SELECT 
+                con_codigo valor,
+                con_nome label
+            FROM contatos
+            ORDER BY 2 ASC
+        `;
+    } else {
+        res.status(400).json({error:'tipo ñ existente'})
+        throw true
+    }
+    
+    firebirdConfig.Execute(query, (result) => {
+        res.json(result);
+    })
 
+})
+app.post('/delvetroapi/:cliente/cabecalho', (req, res) => {
+    firebirdConfig.Execute(`
+        SELECT 
+            'Pago' label,
+            SUM(cai_credito) valor
+        FROM caixa
+        WHERE 
+            con_codigo = ${req.params.cliente}
+            and cai_pagamento IS NOT NULL 
+            AND cai_categoria IN ('VENDA','SERVICOS')
+        UNION ALL
+        SELECT 
+            'pedido'label,
+            SUM(ven_total) valor
+        FROM vendas
+        WHERE con_codigo = ${req.params.cliente}
+        UNION ALL 
+        select 
+            'nome'label,
+            con_nome valor
+        FROM contatos 
+        WHERE con_codigo = ${req.params.cliente}
+    `, (result) => {            
+        const jsonRetorno = [{
+            nome: result[2].VALOR,
+            valorPago: result[0].VALOR,
+            valorPedido: result[1].VALOR       
+        }]    
+        res.json(jsonRetorno);
+
+    })
+})
+app.post('/delvetroapi/:cliente/grafico', (req, res) => {
+    firebirdConfig.Execute(`
+        SELECT 
+            EXTRACT(YEAR FROM cai_pagamento) || '/' || right('0'||extract(month from cai_pagamento),2) AS label,
+            SUM(cai_credito) valor
+        FROM caixa
+        WHERE 
+            con_codigo = ${req.params.cliente}
+            AND cai_pagamento IS NOT NULL 
+            AND cai_categoria IN ('VENDA','SERVICOS')
+        GROUP BY label
+        ORDER BY label
+    `, (result) => {
+
+
+        res.json(result);
+
+    })
+})
 app.post('/delvetroapi/clientes', (req, res) => {
     firebirdConfig.Execute(`
         SELECT 

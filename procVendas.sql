@@ -63,3 +63,34 @@ AND contatos.con_codigo NOT IN (11865,12018,12026,11874)
 AND cai_pagamento IS NOT NULL
 GROUP BY caixa.con_codigo,con_nome
 ORDER BY credito DESC
+
+select extract(year from cai_pagamento) || '/' || right('0'||extract(month from cai_pagamento),2) AS mes,
+sum(cai_credito)valorCredito
+from caixa
+where con_codigo = 11836
+and cai_pagamento is not null and cai_categoria in ('VENDA','SERVICOS')
+group by mes
+order by mes
+
+select 'Pago'label,
+sum(cai_credito)valor
+from caixa
+where 
+con_codigo = 11836
+and cai_pagamento is not null 
+and cai_categoria in ('VENDA','SERVICOS')
+union all
+select 'pedido'label,
+sum(ven_total)valor
+from vendas
+where con_codigo = 11836
+union all 
+select 'nome'label,con_nome valor
+from contatos 
+where con_codigo = 11836
+
+select 
+con_codigo,
+con_nome 
+from contatos
+order by 2 asc
