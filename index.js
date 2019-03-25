@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 moment.locale('pt-br');
 var app = express();
-
+ 
 app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
@@ -18,7 +18,10 @@ app.use(function (req, res, next) {
 });
 
 var firebirdConfig = require('./firebirdConfig')();
-console.log(firebirdConfig)
+var controller = require('./controller');
+
+app.route('/delvetroapi/fechamentoTeste')
+    .post(controller.fechamento);
 
 
 app.get('/delvetroapi/', (req, res) => res.send('Hello Delvetro!'))
