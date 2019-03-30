@@ -1,7 +1,9 @@
+var sql = require('mssql')
+
 const configDev = {
     user: 'node',
     password: 'nodeadmin',
-    server: 'localhost', // You can use 'localhost\\instance' to connect to named instance
+    server: 'AIRFORCEONE\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
     database: 'del_vetro',
     pool: {
         max: 20,
@@ -10,18 +12,16 @@ const configDev = {
     }
 }
 
-
 module.exports = function () {
 
     let response = {}
 
-
-    response.queryDB = function(query, callback) {
+    response.queryDB = function (query, callback) {
         const pool = new sql.ConnectionPool(configDev, function (err) {
             if (err) {
                 console.error("error connecting: " + err.stack);
                 callback(true);
-            }            
+            }
 
             var conn = new sql.Request(pool);
             conn.query(query, function (error, result) {
@@ -32,12 +32,8 @@ module.exports = function () {
                 } else {
                     callback(false, result.recordset);
                 }
-
             });
-
         });
-
     };
-
     return response;
 }
