@@ -20,7 +20,7 @@ app.get('/delvetroapi/', (req, res) => res.send('Hello Delvetro!'))
 
 app.route('/delvetroapi/cadastro/:tipo').post(controller.cadastro);
 
-app.route('/delvetroapi/cadastro/:tipo/:ID_CLIENTE').get(controller.cadastro);
+app.route('/delvetroapi/cadastro/:tipo/:ID').get(controller.cadastro);
 
 app.route('/delvetroapi/combo/:tipo').get(controller.combo);
 

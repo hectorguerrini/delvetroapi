@@ -1,41 +1,106 @@
 const querySql = require('./mssqlConfig')();
 
+function getQuery(tipo, method, args, params) {
+    let query = '';
+    if (method === 'POST') {
+        switch (tipo) {
+            case 'cliente':
+                query = `
+                EXEC sp_update_cadastro_clientes
+                @ID_CLIENTE = ${args.ID_CLIENTE ? args.ID_CLIENTE : -1},
+                @NOVO_CADASTRO = ${args.ID_CLIENTE ? 0 : 1},
+                @NM_CLIENTE = '${args.NM_CLIENTE}',
+                @ENDERECO = '${args.ENDERECO}',
+                @NUMERO = ${args.NUMERO},
+                @BAIRRO = '${args.BAIRRO}',
+                @CIDADE = '${args.CIDADE}',
+                @CEP = '${args.CEP}',
+                @ESTADO = '${args.ESTADO}',
+                @TELEFONE_1 = '${args.TELEFONE_1}',
+                ${args.TELEFONE_2 ? '@TELEFONE_2 = \'' + args.TELEFONE_2 + '\',' : ''}
+                ${args.TELEFONE_3 ? '@TELEFONE_3 = \'' + args.TELEFONE_3 + '\',' : ''}
+                @RG = '${args.RG}',
+                @EMAIL = '${args.EMAIL}',
+                @RAZAO_SOCIAL = '${args.RAZAO_SOCIAL}',
+                @NM_CONTATO = '${args.NM_CONTATO}',
+                @CPF = '${args.CPF}',
+                @LOJISTA = ${args.LOJISTA}
+                ${args.COMPLEMENTO ? ',@COMPLEMENTO = \'' + args.COMPLEMENTO + '\'' : ''}
+                `;
+                break;
+            case 'estoque':
+                query = `
+                EXEC sp_update_cadastro_estoque
+                @ID_TIPO = '${args.ID_TIPO}',
+                @DESCRICAO = '${args.DESCRICAO}',
+                @QTDE = ${args.QTDE},
+                @UNIDADE = '${args.UNIDADE}',
+                @LOCALIZACAO = '${args.LOCALIZACAO}',
+                @ESTOQUE_MIN = ${args.ESTOQUE_MIN},
+                @ESTOQUE_MAX = ${args.ESTOQUE_MAX},
+                @CUSTO_ULTIMO_RECEBIMENTO = ${args.CUSTO_ULTIMO_RECEBIMENTO},
+                @ESPESSURA = ${args.ESPESSURA}
+                `;
+                break;
+            case 'servico':
+                query = `
+                EXEC sp_update_cadastro_servico
+                @ID_SERVICO = ${args.ID_SERVICO},
+                @ID_TIPO = ${args.ID_TIPO},
+                @UNIDADE_CUSTO = '${args.UNIDADE_CUSTO}',
+                @CUSTO_POR_UNIDADE = ${args.CUSTO_POR_UNIDADE},
+                @PRZ_CONCLUSAO = ${args.PRZ_CONCLUSAO},
+                @OBS = '${args.OBS}',
+                @ID_BENEFICIADO = ${args.ID_BENEFICIADO},
+                @DESCRICAO = '${args.DESCRICAO}',
+                @EXTERNO = ${args.EXTERNO}
+                `;
+                break;
+            case 'beneficiado':
+                query = `
+                EXEC sp_update_cadastro_estoque
+                @ID_BENEFICIADO = '${args.ID_BENEFICIADO}',
+                @NM_BENEFICIADO = '${args.NM_BENEFICIADO}',
+                @TIPO_BENEFICIARIO = ${args.TIPO_BENEFICIARIO},
+                @CPF = '${args.CPF}',
+                @CNPJ = '${args.CNPJ}',
+                @RAZAO_SOCIAL = ${args.RAZAO_SOCIAL},
+                `;
+                break;
+        }
+    } else if (method === 'GET') {
+        switch (tipo) {
+            case 'cliente':
+                query = `
+                EXEC sp_get_cadastro_cliente
+                @ID_CLIENTE = ${params.ID}
+                `;
+                break;
+            case 'beneficiado':
+                query = `
+                EXEC sp_get_cadastro_beneficiado
+                @ID_BENEFICIADO = ${params.ID}
+                `;
+                break;
+            case 'servico':
+                query = `
+                EXEC sp_get_servico
+                @ID_SERVICO = ${params.ID}
+                `;
+                break;
+            case 'estoque':
+                query = `
+                EXEC sp_get_estoque
+                @ID_ESTOQUE = ${params.ID}
+                `;
+                break;
+        }
+    }
+    return query;
+}
+
 exports.cadastro = function (req, res) {
-    if (req.method === 'POST'){
-        if (req.params.tipo == 'cliente') {
-            var query = `
-                        EXEC sp_update_cadastro_clientes
-                        @ID_CLIENTE = ${req.body.ID_CLIENTE ? req.body.ID_CLIENTE : -1},
-                        @NOVO_CADASTRO = ${req.body.ID_CLIENTE ? 0 : 1},
-                        @NM_CLIENTE = '${req.body.NM_CLIENTE}',
-                        @ENDERECO = '${req.body.ENDERECO}',
-                        @NUMERO = ${req.body.NUMERO},
-                        @BAIRRO = '${req.body.BAIRRO}',
-                        @CIDADE = '${req.body.CIDADE}',
-                        @CEP = '${req.body.CEP}',
-                        @ESTADO = '${req.body.ESTADO}',
-                        @TELEFONE_1 = '${req.body.TELEFONE_1}',
-                        ${req.body.TELEFONE_2 ? '@TELEFONE_2 = \'' + req.body.TELEFONE_2 + '\',' : ''}
-                        ${req.body.TELEFONE_3 ? '@TELEFONE_3 = \'' + req.body.TELEFONE_3 + '\',' : ''}
-                        @RG = '${req.body.RG}',
-                        @EMAIL = '${req.body.EMAIL}',
-                        @RAZAO_SOCIAL = '${req.body.RAZAO_SOCIAL}',
-                        @NM_CONTATO = '${req.body.NM_CONTATO}',
-                        @CPF = '${req.body.CPF}',
-                        @LOJISTA = ${req.body.LOJISTA}
-                        ${req.body.COMPLEMENTO ? ',@COMPLEMENTO = \'' + req.body.COMPLEMENTO + '\'' : ''}
-                        `;
-        }
-    }
-    else if(req.method === 'GET'){
-        if (req.params.tipo == 'cliente') {
-            var query = `
-            EXEC sp_get_cadastro_cliente
-            @ID_CLIENTE = ${req.params.ID_CLIENTE}
-            `;
-        }
-    }
-    
+    var query = getQuery(req.params.tipo, req.method, req.body, req.params);
 
     querySql.queryDB(query, (err, result) => {
         if (err) {
@@ -50,9 +115,7 @@ exports.cadastro = function (req, res) {
 }
 
 exports.combo = function (req, res) {
-    if (req.params.tipo == 'clientes') {
-        var query = 'SELECT ID_CLIENTE AS VALOR, NM_CLIENTE AS LABEL FROM DV_CADASTRO_CLIENTES';
-    }
+    var query = `EXEC sp_get_combo @COMBO='${req.params.tipo}'`;
 
     querySql.queryDB(query, (err, result) => {
         if (err) {
