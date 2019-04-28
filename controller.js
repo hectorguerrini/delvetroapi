@@ -67,6 +67,37 @@ function getQuery(tipo, method, args, params) {
                 @RAZAO_SOCIAL = ${args.RAZAO_SOCIAL},
                 `;
                 break;
+            case 'produto':
+                query = `
+                EXEC sp_update_cadastro_produto
+                @ID_PRODUTO '${args.ID_PRODUTO}',
+                @NM_PRODUTO '${args.NM_PRODUTO}',
+                @TIPO '${args.TIPO}',
+                @UNIDADE_VENDA '${args.UNIDADE_VENDA}',
+                @PRECO_UNITARIO '${args.PRECO_UNITARIO}',
+                @PRZ_ENTREGA '${args.PRZ_ENTREGA}',
+                @CUSTO '${args.CUSTO}'
+                `;
+                break;
+            case 'composicao_produto_estoque':
+                query = `
+                EXEC sp_update_cadastro_composicao_produto_estoque
+                @ID_PRODUTO '${args.ID_PRODUTO}',
+                @ID_ESTOQUE '${args.ID_ESTOQUE}',
+                @QTDE_UTILIZADA '${args.QTDE_UTILIZADA}',
+                @CUSTO '${args.CUSTO}',
+                @UNIDADE '${args.UNIDADE}',
+                @ID_COMPOSICAO_ESTOQUE '${args.ID_COMPOSICAO_ESTOQUE}'
+                `;
+                break;
+            case 'composicao_produto_servico':
+                query = `
+                EXEC sp_update_cadastro_composicao_produto_servico
+                @ID_PRODUTO '${args.ID_PRODUTO}',
+                @ID_SERVICO '${args.ID_SERVICO}',
+                @ID_COMPOSICAO_SERVICO '${args.ID_COMPOSICAO_SERVICO}'
+                `;
+                break;
         }
     } else if (method === 'GET') {
         switch (tipo) {
@@ -92,6 +123,12 @@ function getQuery(tipo, method, args, params) {
                 query = `
                 EXEC sp_get_estoque
                 @ID_ESTOQUE = ${params.ID}
+                `;
+                break;
+            case 'vendas':
+                query = `
+                EXEC sp_get_vendas
+                @ID_CLIENTE = ${params.ID}
                 `;
                 break;
         }
