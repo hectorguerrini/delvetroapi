@@ -16,9 +16,6 @@ function getQuery(tipo, method, args, params) {
                 @CIDADE = '${args.CIDADE}',
                 @CEP = '${args.CEP}',
                 @ESTADO = '${args.ESTADO}',
-                @TELEFONE_1 = '${args.TELEFONE_1}',
-                ${args.TELEFONE_2 ? '@TELEFONE_2 = \'' + args.TELEFONE_2 + '\',' : ''}
-                ${args.TELEFONE_3 ? '@TELEFONE_3 = \'' + args.TELEFONE_3 + '\',' : ''}
                 @RG = '${args.RG}',
                 @EMAIL = '${args.EMAIL}',
                 @RAZAO_SOCIAL = '${args.RAZAO_SOCIAL}',
@@ -28,6 +25,27 @@ function getQuery(tipo, method, args, params) {
                 ${args.COMPLEMENTO ? ',@COMPLEMENTO = \'' + args.COMPLEMENTO + '\'' : ''}
                 `;
                 break;
+            // case 'telefone':
+            //     query = `
+            //     EXEC sp_update_cadastro_clientes
+            //     @ID_CLIENTE = ${args.ID_CLIENTE ? args.ID_CLIENTE : -1},
+            //     @NOVO_CADASTRO = ${args.ID_CLIENTE ? 0 : 1},
+            //     @NM_CLIENTE = '${args.NM_CLIENTE}',
+            //     @ENDERECO = '${args.ENDERECO}',
+            //     @NUMERO = ${args.NUMERO},
+            //     @BAIRRO = '${args.BAIRRO}',
+            //     @CIDADE = '${args.CIDADE}',
+            //     @CEP = '${args.CEP}',
+            //     @ESTADO = '${args.ESTADO}',
+            //     @RG = '${args.RG}',
+            //     @EMAIL = '${args.EMAIL}',
+            //     @RAZAO_SOCIAL = '${args.RAZAO_SOCIAL}',
+            //     @NM_CONTATO = '${args.NM_CONTATO}',
+            //     @CPF = '${args.CPF}',
+            //     @LOJISTA = ${args.LOJISTA}
+            //     ${args.COMPLEMENTO ? ',@COMPLEMENTO = \'' + args.COMPLEMENTO + '\'' : ''}
+            //     `;
+            //     break;
             case 'estoque':
                 query = `
                 EXEC sp_update_cadastro_estoque
@@ -70,32 +88,31 @@ function getQuery(tipo, method, args, params) {
             case 'produto':
                 query = `
                 EXEC sp_update_cadastro_produto
-                @ID_PRODUTO '${args.ID_PRODUTO}',
-                @NM_PRODUTO '${args.NM_PRODUTO}',
-                @TIPO '${args.TIPO}',
-                @UNIDADE_VENDA '${args.UNIDADE_VENDA}',
-                @PRECO_UNITARIO '${args.PRECO_UNITARIO}',
-                @PRZ_ENTREGA '${args.PRZ_ENTREGA}',
-                @CUSTO '${args.CUSTO}'
+                @ID_PRODUTO = ${args.ID_PRODUTO ? args.ID_PRODUTO : null},
+                @NM_PRODUTO = '${args.NM_PRODUTO}',
+                @TIPO = '${args.TIPO}',
+                @UNIDADE_VENDA = '${args.UNIDADE_VENDA}',
+                @PRECO_UNITARIO = ${args.PRECO_UNITARIO},
+                @PRZ_ENTREGA = ${args.PRZ_ENTREGA},
+                @CUSTO = ${args.CUSTO}
                 `;
                 break;
             case 'composicao_produto_estoque':
                 query = `
                 EXEC sp_update_cadastro_composicao_produto_estoque
-                @ID_PRODUTO '${args.ID_PRODUTO}',
-                @ID_ESTOQUE '${args.ID_ESTOQUE}',
-                @QTDE_UTILIZADA '${args.QTDE_UTILIZADA}',
-                @CUSTO '${args.CUSTO}',
-                @UNIDADE '${args.UNIDADE}',
-                @ID_COMPOSICAO_ESTOQUE '${args.ID_COMPOSICAO_ESTOQUE}'
+                @ID_PRODUTO = ${args.ID_PRODUTO},
+                @ID_ESTOQUE = ${args.ID_ESTOQUE},
+                @QTDE_UTILIZADA = ${args.QTDE_UTILIZADA},
+                @CUSTO = ${args.CUSTO},
+                @ID_COMPOSICAO_ESTOQUE = ${args.ID_COMPOSICAO_ESTOQUE ? args.ID_COMPOSICAO_ESTOQUE : null}
                 `;
                 break;
             case 'composicao_produto_servico':
                 query = `
                 EXEC sp_update_cadastro_composicao_produto_servico
-                @ID_PRODUTO '${args.ID_PRODUTO}',
-                @ID_SERVICO '${args.ID_SERVICO}',
-                @ID_COMPOSICAO_SERVICO '${args.ID_COMPOSICAO_SERVICO}'
+                @ID_PRODUTO = ${args.ID_PRODUTO},
+                @ID_SERVICO = ${args.ID_SERVICO},
+                @ID_COMPOSICAO_SERVICO = ${args.ID_COMPOSICAO_SERVICO ? args.ID_COMPOSICAO_SERVICO : null}
                 `;
                 break;
         }
