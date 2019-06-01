@@ -174,6 +174,12 @@ function getQuery(tipo, method, args, params) {
                 @ID_CLIENTE = ${params.ID}
                 `;
                 break;
+            case 'produtos':
+                query = `
+                EXEC sp_get_produtos
+                @ID_PRODUTOS = ${params.ID}
+                `;
+                break;
         }
     }
     return query;
@@ -187,6 +193,7 @@ exports.cadastro = function (req, res) {
             console.dir(err);
             return;
         }
+        result = req.params.tipo !== 'produtos' ? result : result[0].produtos
         res.json({
             query: query,
             json: result
