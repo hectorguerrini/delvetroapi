@@ -5,6 +5,7 @@ const configDev = {
     password: 'nodeadmin',
     server: 'AIRFORCEONE\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
     database: 'del_vetro',
+    parseJSON: true,
     pool: {
         max: 20,
         min: 0,
