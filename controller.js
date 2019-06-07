@@ -4,11 +4,37 @@ function getQuery(tipo, method, args, params) {
     let query = '';
     if (method === 'POST') {
         switch (tipo) {
+            case 'venda':
+                query = `
+                EXEC sp_update_cadastro_venda
+                @jsonVariable = '${JSON.stringify(args)}'
+                `;
+                break;
+            // case 'venda_old':
+            //     query = `
+            //     EXEC sp_update_cadastro_venda
+            //     @ID_VENDA = ${args.ID_VENDA ? args.ID_VENDA : null},
+            //     @DT_VENDA = '${args.DT_VENDA}',
+            //     @ID_CLIENTE = ${args.ID_CLIENTE},
+            //     @ID_FUNCIONARIO = ${args.ID_FUNCIONARIO},
+            //     @VL_TOTAL = ${args.VL_TOTAL},
+            //     @VL_PAGO_TOTAL = ${args.VL_PAGO_TOTAL},
+            //     @VL_PARCELADO_TOTAL = ${args.VL_PARCELADO_TOTAL},
+            //     @VL_PARCELADO_PAGO = ${args.VL_PARCELADO_PAGO},
+            //     @STATUS_PRODUTOS = '${args.STATUS_PRODUTOS}',
+            //     @STATUS_FINANCEIRO = '${args.STATUS_FINANCEIRO}',
+            //     @QTD_PRODUTOS = ${args.QTD_PRODUTOS},
+            //     @QT_PRODUTOS_ENTREGUES = ${args.QT_PRODUTOS_ENTREGUES},
+            //     @ID_ORCAMENTO = ${args.ID_ORCAMENTO},
+            //     @DT_ATUALIZACAO = '${args.DT_ATUALIZACAO}',
+            //     @STATUS_VENDA = '${args.STATUS_VENDA}'
+            //     `;
+            //     break;
             case 'cliente':
+                // @NOVO_CADASTRO = ${args.ID_CLIENTE ? 0 : 1}
                 query = `
                 EXEC sp_update_cadastro_clientes
                 @ID_CLIENTE = ${args.ID_CLIENTE ? args.ID_CLIENTE : -1},
-                @NOVO_CADASTRO = ${args.ID_CLIENTE ? 0 : 1},
                 @NM_CLIENTE = '${args.NM_CLIENTE}',
                 @ENDERECO = '${args.ENDERECO}',
                 @NUMERO = ${args.NUMERO},
