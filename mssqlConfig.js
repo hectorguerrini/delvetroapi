@@ -3,7 +3,7 @@ var sql = require('mssql')
 const configDev = {
     user: 'node',
     password: 'nodeadmin',
-    server: 'AIRFORCEONE\\SQLEXPRESS01', // You can use 'localhost\\instance' to connect to named instance
+    server: 'AIRFORCEONE\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
     database: 'del_vetro',
     parseJSON: true,    
     pool: {
