@@ -35,13 +35,14 @@ function getQuery(tipo, method, args, params) {
                 query = `
                 EXEC sp_update_cadastro_clientes
                 @ID_CLIENTE = ${args.ID_CLIENTE ? args.ID_CLIENTE : -1},
-                @NM_CLIENTE = '${args.NM_CLIENTE}',
+                @NM_CLIENTE = '${args.NM_CLIENTE ? args.NM_CLIENTE : ''}',
                 @ENDERECO = '${args.ENDERECO}',
                 @NUMERO = ${args.NUMERO},
                 @BAIRRO = '${args.BAIRRO}',
                 @CIDADE = '${args.CIDADE}',
                 @CEP = '${args.CEP}',
                 @ESTADO = '${args.ESTADO}',
+                @TELEFONES = '${args.TELEFONES ? JSON.stringify(args.TELEFONES) : [] }',
                 @RG = '${args.RG}',
                 @EMAIL = '${args.EMAIL}',
                 @RAZAO_SOCIAL = '${args.RAZAO_SOCIAL}',
@@ -75,6 +76,7 @@ function getQuery(tipo, method, args, params) {
             case 'estoque':
                 query = `
                 EXEC sp_update_cadastro_estoque
+                @ID_ESTOQUE = '${args.ID_ESTOQUE}',
                 @ID_TIPO = '${args.ID_TIPO}',
                 @DESCRICAO = '${args.DESCRICAO}',
                 @QTDE = ${args.QTDE},
@@ -120,7 +122,8 @@ function getQuery(tipo, method, args, params) {
                 @UNIDADE_VENDA = '${args.UNIDADE_VENDA}',
                 @PRECO_UNITARIO = ${args.PRECO_UNITARIO},
                 @PRZ_ENTREGA = ${args.PRZ_ENTREGA},
-                @CUSTO = ${args.CUSTO}
+                @CUSTO = ${args.CUSTO},
+                @COMPOSICAO = '${args.COMPOSICAO ? JSON.stringify(args.COMPOSICAO) : []}'
                 `;
                 break;
             case 'composicao_produto_estoque':
