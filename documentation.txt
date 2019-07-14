@@ -16,6 +16,7 @@ GET:
         servicos
         estoque
         produtos
+        produtos_vendas
         formas_pagamentos
 
 POST:
@@ -25,6 +26,4 @@ POST:
         estoque
         servico
         beneficiado
-        produto
-        composicao_produto_estoque
-        composicao_produto_servico
+        produto     
