@@ -22,7 +22,7 @@ function getQuery(tipo, method, args, params) {
                 @CIDADE = '${args.CIDADE}',
                 @CEP = '${args.CEP}',
                 @ESTADO = '${args.ESTADO}',
-                @TELEFONES = '${args.TELEFONES ? JSON.stringify(args.TELEFONES) : [] }',
+                @TELEFONES = '${args.TELEFONES ? JSON.stringify(args.TELEFONES) : []}',
                 @RG = '${args.RG}',
                 @EMAIL = '${args.EMAIL}',
                 @RAZAO_SOCIAL = '${args.RAZAO_SOCIAL}',
@@ -35,7 +35,7 @@ function getQuery(tipo, method, args, params) {
             case 'estoque':
                 query = `
                 EXEC sp_update_cadastro_estoque
-                @ID_ESTOQUE = '${args.ID_ESTOQUE}',
+                @ID_ESTOQUE = ${args.ID_ESTOQUE},
                 @ID_TIPO = '${args.ID_TIPO}',
                 @DESCRICAO = '${args.DESCRICAO}',
                 @QTDE = ${args.QTDE},
@@ -147,6 +147,21 @@ function getQuery(tipo, method, args, params) {
     return query;
 }
 
+exports.combo = function (req, res) {
+    var query = `EXEC sp_get_combo @COMBO='${req.params.tipo}'`;
+
+    querySql.queryDB(query, (err, result) => {
+        if (err) {
+            console.dir(err);
+            return;
+        }
+        res.json({
+            query: query,
+            json: result
+        });
+    });
+}
+
 exports.cadastro = function (req, res) {
     var query = getQuery(req.params.tipo, req.method, req.body, req.params);
 
@@ -163,8 +178,14 @@ exports.cadastro = function (req, res) {
     });
 }
 
-exports.combo = function (req, res) {
-    var query = `EXEC sp_get_combo @COMBO='${req.params.tipo}'`;
+exports.nfe = function (req, res) {
+    //ENVIA DADOS P/ BD
+    if (req.method === 'GET') {
+        query = `
+                EXEC sp_get_json_emissao_nfe
+                @ID_VENDA = ${req.params.ID_VENDA}
+                `;
+    }
 
     querySql.queryDB(query, (err, result) => {
         if (err) {
@@ -176,4 +197,6 @@ exports.combo = function (req, res) {
             json: result
         });
     });
+
+    //ENVIA REQ P/ EMISSAO DE NFE
 }
