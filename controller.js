@@ -84,25 +84,7 @@ function getQuery(tipo, method, args, params) {
                 @CUSTO = ${args.CUSTO},
                 @COMPOSICAO = '${args.COMPOSICAO ? JSON.stringify(args.COMPOSICAO) : []}'
                 `;
-                break;
-            case 'composicao_produto_estoque':
-                query = `
-                EXEC sp_update_cadastro_composicao_produto_estoque
-                @ID_PRODUTO = ${args.ID_PRODUTO},
-                @ID_ESTOQUE = ${args.ID_ESTOQUE},
-                @QTDE_UTILIZADA = ${args.QTDE_UTILIZADA},
-                @CUSTO = ${args.CUSTO},
-                @ID_COMPOSICAO_ESTOQUE = ${args.ID_COMPOSICAO_ESTOQUE ? args.ID_COMPOSICAO_ESTOQUE : null}
-                `;
-                break;
-            case 'composicao_produto_servico':
-                query = `
-                EXEC sp_update_cadastro_composicao_produto_servico
-                @ID_PRODUTO = ${args.ID_PRODUTO},
-                @ID_SERVICO = ${args.ID_SERVICO},
-                @ID_COMPOSICAO_SERVICO = ${args.ID_COMPOSICAO_SERVICO ? args.ID_COMPOSICAO_SERVICO : null}
-                `;
-                break;
+                break;            
         }
     } else if (method === 'GET') {
         switch (tipo) {
