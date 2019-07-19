@@ -1,5 +1,6 @@
 const querySql = require('./mssqlConfig')();
-
+const IncomingForm = require('formidable').IncomingForm;
+const fs = require('fs');
 function getQuery(tipo, method, args, params) {
     let query = '';
     if (method === 'POST') {
@@ -84,7 +85,7 @@ function getQuery(tipo, method, args, params) {
                 @CUSTO = ${args.CUSTO},
                 @COMPOSICAO = '${args.COMPOSICAO ? JSON.stringify(args.COMPOSICAO) : []}'
                 `;
-                break;            
+                break;
         }
     } else if (method === 'GET') {
         switch (tipo) {
@@ -112,7 +113,7 @@ function getQuery(tipo, method, args, params) {
                 @ID_ESTOQUE = ${params.ID}
                 `;
                 break;
-            case 'vendas':
+            case 'lista_vendas':
                 query = `
                 EXEC sp_get_vendas
                 @ID_CLIENTE = ${params.ID}
@@ -122,6 +123,12 @@ function getQuery(tipo, method, args, params) {
                 query = `
                 EXEC sp_get_produtos
                 @ID_PRODUTOS = ${params.ID}
+                `;
+                break;
+            case 'venda':
+                query = `
+                EXEC sp_get_cadastro_venda
+                @ID_VENDA = ${params.ID}
                 `;
                 break;
         }
@@ -152,7 +159,6 @@ exports.cadastro = function (req, res) {
             console.dir(err);
             return;
         }
-        result = req.params.tipo !== 'produtos' ? result : result[0].produtos
         res.json({
             query: query,
             json: result
@@ -181,4 +187,18 @@ exports.nfe = function (req, res) {
     });
 
     //ENVIA REQ P/ EMISSAO DE NFE
+}
+
+exports.upload = function (req, res) {
+    var form = new IncomingForm()
+    form.on('fileBegin', function (name, file){
+        file.path = __dirname +'/images/' + req.params.ID_CLIENTE;
+        fs.existsSync(file.path) || fs.mkdirSync(file.path);     
+        file.path = file.path + '/' + file.name;
+    });
+    form.on('file', (field, file) => {     
+        console.log('Uploaded ' + file.name);       
+    }) 
+    form.parse(req)   
+    return res.status(200).json({result: 'Upload Success'});    
 }

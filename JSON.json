@@ -1,0 +1,74 @@
+{
+    "ID_VENDA": 1,
+    "ID_CLIENTE": 11836,
+    "NM_CLIENTE": "VIDRACARIA 2 IRMAOS",
+    "VL_TOTAL": 154.80,
+    "STATUS_VENDA": "Orçamento",
+    "ITENS": [{
+        "ID_ITEM_VENDIDO": 1,
+        "ID_PRODUTO": 1,
+        "NM_PRODUTO": "VIDRO INCOLOR 4MM",
+        "QTDE": 1,
+        "AREA": 0.40,
+        "AREA_CONSIDERADA": 0.40,
+        "ALTURA": 800.00,
+        "ALTURA_CONSIDERADA": 800.00,
+        "LARGURA": 500.00,
+        "LARGURA_CONSIDERADA": 500.00,
+        "VL_TOTAL": 16.00,
+        "VL_UNIDADE": 40.00,
+        "EXTRAS": [{
+            "ID_ITEM_VENDIDO": 1,
+            "ID_SERVICO": 2,
+            "QUANTIDADE": 2,
+            "CUSTO": 30.00
+        }]
+    }, {
+        "ID_ITEM_VENDIDO": 2,
+        "ID_PRODUTO": 1,
+        "NM_PRODUTO": "VIDRO INCOLOR 4MM",
+        "QTDE": 1,
+        "AREA": 0.40,
+        "AREA_CONSIDERADA": 0.40,
+        "ALTURA": 800.00,
+        "ALTURA_CONSIDERADA": 800.00,
+        "LARGURA": 500.00,
+        "LARGURA_CONSIDERADA": 500.00,
+        "VL_TOTAL": 16.00,
+        "VL_UNIDADE": 40.00,
+        "EXTRAS": [{
+            "ID_ITEM_VENDIDO": 2,
+            "ID_SERVICO": 2,
+            "QUANTIDADE": 2,
+            "CUSTO": 30.00
+        }]
+    }, {
+        "ID_ITEM_VENDIDO": 3,
+        "ID_PRODUTO": 1,
+        "NM_PRODUTO": "VIDRO INCOLOR 4MM",
+        "QTDE": 1,
+        "AREA": 0.32,
+        "AREA_CONSIDERADA": 0.32,
+        "ALTURA": 400.00,
+        "ALTURA_CONSIDERADA": 400.00,
+        "LARGURA": 800.00,
+        "LARGURA_CONSIDERADA": 800.00,
+        "VL_TOTAL": 12.80,
+        "VL_UNIDADE": 40.00,
+        "EXTRAS": null
+    }, {
+        "ID_ITEM_VENDIDO": 4,
+        "ID_PRODUTO": 3,
+        "NM_PRODUTO": "SILICONE",
+        "QTDE": 2,
+        "AREA": null,
+        "AREA_CONSIDERADA": null,
+        "ALTURA": null,
+        "ALTURA_CONSIDERADA": null,
+        "LARGURA": null,
+        "LARGURA_CONSIDERADA": null,
+        "VL_TOTAL": 80.00,
+        "VL_UNIDADE": 40.00,
+        "EXTRAS": null
+    }]
+}
