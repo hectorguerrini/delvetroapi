@@ -20,6 +20,8 @@ app.route('/delvetroapi/nfe/emissao/:ID_VENDA').get(controller.nfe);
 
 app.route('/delvetroapi/cadastro/:tipo/:ID').get(controller.cadastro);
 
+app.route('/delvetroapi/get/:tipo/:ID').get(controller.cadastro);
+
 app.route('/delvetroapi/combo/:tipo').get(controller.combo);
 
 app.route('/delvetroapi/upload/:ID_CLIENTE').post(controller.upload);
