@@ -5,6 +5,12 @@ function getQuery(tipo, method, args, params) {
     let query = '';
     if (method === 'POST') {
         switch (tipo) {
+            case 'recebimento':
+                query = `
+                EXEC sp_update_pagamento_venda
+                @pagamentos = '${JSON.stringify(args)}'
+                `
+                break;
             case 'venda':
                 query = `
                 EXEC sp_update_cadastro_venda
