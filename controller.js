@@ -140,7 +140,8 @@ function getQuery(tipo, method, args, params) {
             case 'venda_recebimento':
                 query = `
                 EXEC sp_get_venda_recebimento
-                @ID_VENDA = ${params.ID}
+                @ID_CLIENTE = ${params.ID_CLIENTE},
+                @ID_VENDA = ${params.ID_VENDA}
                 `;
                 break;
         }
@@ -177,21 +178,6 @@ exports.cadastro = function (req, res) {
         });
     });
 }
-exports.get = function (req, res) {
-    var query = getQuery(req.params.tipo, req.method, req.body, req.params);
-
-    querySql.queryDB(query, (err, result) => {
-        if (err) {
-            console.dir(err);
-            return;
-        }
-        res.json({
-            query: query,
-            json: result
-        });
-    });
-}
-
 
 exports.nfe = function (req, res) {
     //ENVIA DADOS P/ BD
