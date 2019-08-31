@@ -92,6 +92,20 @@ function getQuery(tipo, method, args, params) {
                 @COMPOSICAO = '${args.COMPOSICAO ? JSON.stringify(args.COMPOSICAO) : []}'
                 `;
                 break;
+            case 'despesa':
+                query = `
+                EXEC sp_update_despesas
+                @ID_DESPESA = ${args.ID_DESPESA}
+                ,@NM_DESPESA = '${args.NM_DESPESA}'
+                ,@VL_DESPESA = ${args.VL_DESPESA}
+                ,@ID_CATEGORIA = ${args.ID_CATEGORIA}
+                ,@ID_BENEFICIADO = ${args.ID_BENEFICIADO}
+                ,@DT_VENCIMENTO = '${args.DT_VENCIMENTO}'
+                ,@ID_FORMA_PGTO = ${args.ID_FORMA_PGTO}
+                ,@DT_PGTO = '${args.DT_PGTO}'
+                ,@STATUS_PGTO = '${args.STATUS_PGTO}'
+                `;
+                break;
         }
     } else if (method === 'GET') {
         switch (tipo) {
