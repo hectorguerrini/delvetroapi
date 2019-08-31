@@ -102,7 +102,7 @@ function getQuery(tipo, method, args, params) {
                 ,@ID_BENEFICIADO = ${args.ID_BENEFICIADO}
                 ,@DT_VENCIMENTO = '${args.DT_VENCIMENTO}'
                 ,@ID_FORMA_PGTO = ${args.ID_FORMA_PGTO}
-                ,@DT_PGTO = '${args.DT_PGTO}'
+                ,@DT_PGTO = ${args.DT_PGTO ? `'` + args.DT_PGTO + `'` : null}
                 ,@STATUS_PGTO = '${args.STATUS_PGTO}'
                 `;
                 break;
