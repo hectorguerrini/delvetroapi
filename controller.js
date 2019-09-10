@@ -106,6 +106,11 @@ function getQuery(tipo, method, args, params) {
                 ,@STATUS_PGTO = '${args.STATUS_PGTO}'
                 `;
                 break;
+            case 'lista_despesas':
+                query = `
+                EXEC sp_get_lista_despesas
+                `;
+                break;
         }
     } else if (method === 'GET') {
         switch (tipo) {
