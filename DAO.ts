@@ -1,4 +1,4 @@
-import { ConnectionPool, Request, config, IResult, IRecordSet } from 'mssql';
+import { ConnectionPool, config, IRecordSet } from 'mssql';
 export class DAO {
     private configDev: config = {
         user: 'node',
