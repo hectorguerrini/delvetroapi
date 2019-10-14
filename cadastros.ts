@@ -5,6 +5,7 @@ import { Combo } from './models/combo';
 import { Beneficiados } from './models/beneficiados';
 import { Cliente } from './models/cliente';
 import { Servico } from './models/servico';
+import { Estoque } from './models/estoque';
 
 
 export class Cadastros {    
@@ -34,6 +35,73 @@ export class Cadastros {
         })
     }
 
+    // Cadastro Estoque
+    public getCadastroEstoque(req: Request, res: Response): void {
+        const query = `
+            EXEC sp_get_estoque
+            @ID_ESTOQUE = ${req.params.ID}
+        `;
+        this.daoCtrl.queryDB<Estoque>(query, (err, result) => {
+            if (err) {
+                console.dir({
+                    error: err,
+                    query: query
+                })      
+                return;
+            }
+            if (result){                
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query                    
+                });
+            }
+        })
+    }
+    public salvarEstoque(req: Request, res: Response): void {
+        let estoque: Estoque;
+        estoque = req.body;          
+        const query = `
+            EXEC sp_update_cadastro_estoque
+            @ID_ESTOQUE = ${estoque.ID_ESTOQUE},
+            @ID_TIPO = '${estoque.ID_TIPO}',
+            @DESCRICAO = '${estoque.DESCRICAO}',
+            @QTDE = ${estoque.QTDE},
+            @UNIDADE = '${estoque.UNIDADE}',
+            @LOCALIZACAO = '${estoque.LOCALIZACAO}',
+            @ESTOQUE_MIN = ${estoque.ESTOQUE_MIN},
+            @ESTOQUE_MAX = ${estoque.ESTOQUE_MAX},
+            @CUSTO_ULTIMO_RECEBIMENTO = ${estoque.CUSTO_ULTIMO_RECEBIMENTO},
+            @ESPESSURA = ${estoque.ESPESSURA}
+            `;
+
+        this.daoCtrl.queryDB<Cliente>(query, (err, result) => {
+            if (err) {
+                console.dir({
+                    error: err,
+                    query: query
+                })                
+                return;
+            }
+            if (result) {
+                if (result.length > 0)
+                    result[0].TELEFONES = <string>result[0].TELEFONES ? JSON.parse(<string>result[0].TELEFONES) : []; 
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query
+                });
+            }
+        })
+    }
+
+    // Cadastro Cliente
     public getCadastroCliente(req: Request, res: Response): void {
         const query = `
             EXEC sp_get_cadastro_cliente
@@ -61,35 +129,9 @@ export class Cadastros {
             }
         })
     }
-    public getCadastroServico(req: Request, res: Response): void {
-        const query = `
-        EXEC sp_get_servico
-        @ID_SERVICO = ${req.params.ID}
-        `;
-        this.daoCtrl.queryDB<Servico>(query, (err, result) => {
-            if (err) {
-                console.dir({
-                    error: err,
-                    query: query
-                })      
-                return;
-            }
-            if (result){               
-                res.json({
-                    query: query,
-                    json: result
-                });
-            } else {
-                res.json({
-                    query: query                    
-                });
-            }
-        })
-    }
     public salvarCliente(req: Request, res: Response): void {
         let cliente: Cliente;
-        cliente = req.body;  
-        console.log(cliente)      
+        cliente = req.body;    
         const query = `
             EXEC sp_update_cadastro_clientes
             @ID_CLIENTE = ${cliente.ID_CLIENTE},
@@ -132,6 +174,33 @@ export class Cadastros {
             }
         })
     }
+
+    // Cadastro Serviço
+    public getCadastroServico(req: Request, res: Response): void {
+        const query = `
+        EXEC sp_get_servico
+        @ID_SERVICO = ${req.params.ID}
+        `;
+        this.daoCtrl.queryDB<Servico>(query, (err, result) => {
+            if (err) {
+                console.dir({
+                    error: err,
+                    query: query
+                })      
+                return;
+            }
+            if (result){               
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query                    
+                });
+            }
+        })
+    }
     public salvarServico(req: Request, res: Response): void {
         let servico: Servico;
         servico = req.body;        
@@ -167,6 +236,8 @@ export class Cadastros {
             }
         })
     }
+    
+    // Cadastro Beneficiado
     public salvarBeneficiado(req: Request, res: Response): void {
         let beneficiado: Beneficiados;
         beneficiado = req.body;        
