@@ -23,10 +23,13 @@ export class Routes {
         this.router.get('/cliente/:ID', (req, res) => this.cadastroCtrl.getCadastroCliente(req, res));
         this.router.get('/servico/:ID', (req, res) => this.cadastroCtrl.getCadastroServico(req, res));
         this.router.get('/estoque/:ID', (req, res) => this.cadastroCtrl.getCadastroEstoque(req, res));
+        this.router.get('/produto/:ID', (req, res) => this.cadastroCtrl.getCadastroProduto(req, res));
 
         //POST
         this.router.post('/cliente', (req, res) => this.cadastroCtrl.salvarCliente(req, res));
         this.router.post('/servico', (req, res) => this.cadastroCtrl.salvarServico(req, res));
+        this.router.post('/estoque', (req, res) => this.cadastroCtrl.salvarEstoque(req, res));
+        this.router.post('/produto', (req, res) => this.cadastroCtrl.salvarProduto(req, res));
         this.router.post('/beneficiado', (req, res) => this.cadastroCtrl.salvarBeneficiado(req, res));
     }
     

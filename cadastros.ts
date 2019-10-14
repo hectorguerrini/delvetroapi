@@ -6,6 +6,7 @@ import { Beneficiados } from './models/beneficiados';
 import { Cliente } from './models/cliente';
 import { Servico } from './models/servico';
 import { Estoque } from './models/estoque';
+import { Produto } from './models/produto';
 
 
 export class Cadastros {    
@@ -78,7 +79,7 @@ export class Cadastros {
             @ESPESSURA = ${estoque.ESPESSURA}
             `;
 
-        this.daoCtrl.queryDB<Cliente>(query, (err, result) => {
+        this.daoCtrl.queryDB<Estoque>(query, (err, result) => {
             if (err) {
                 console.dir({
                     error: err,
@@ -86,9 +87,7 @@ export class Cadastros {
                 })                
                 return;
             }
-            if (result) {
-                if (result.length > 0)
-                    result[0].TELEFONES = <string>result[0].TELEFONES ? JSON.parse(<string>result[0].TELEFONES) : []; 
+            if (result) {               
                 res.json({
                     query: query,
                     json: result
@@ -217,6 +216,67 @@ export class Cadastros {
             @EXTERNO = ${servico.EXTERNO}
         `;
         this.daoCtrl.queryDB<Servico>(query, (err, result) => {
+            if (err) {
+                console.dir({
+                    error: err,
+                    query: query
+                })                
+                return;
+            }
+            if (result) {
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query
+                });
+            }
+        })
+    }
+
+    // Cadastro Produto
+    public getCadastroProduto(req: Request, res: Response): void {
+        const query = `
+            EXEC sp_get_produtos
+            @ID_PRODUTOS = ${req.params.ID}
+            `;
+        this.daoCtrl.queryDB<Produto>(query, (err, result) => {
+            if (err) {
+                console.dir({
+                    error: err,
+                    query: query
+                })      
+                return;
+            }
+            if (result){               
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query                    
+                });
+            }
+        })
+    }
+    public salvarProduto(req: Request, res: Response): void {
+        let produto: Produto;
+        produto = req.body;        
+        const query = `
+            EXEC sp_update_cadastro_produto
+            @ID_PRODUTO = ${produto.ID_PRODUTO},
+            @NM_PRODUTO = '${produto.NM_PRODUTO}',
+            @TIPO = '${produto.TIPO}',
+            @UNIDADE_VENDA = '${produto.UNIDADE_VENDA}',
+            @PRECO_UNITARIO = ${produto.PRECO_UNITARIO},
+            @PRZ_ENTREGA = ${produto.PRZ_ENTREGA},
+            @CUSTO = ${produto.CUSTO},
+            @COMPOSICAO = '${produto.COMPOSICAO ? JSON.stringify(produto.COMPOSICAO) : []}'
+            `;
+        this.daoCtrl.queryDB<Produto>(query, (err, result) => {
             if (err) {
                 console.dir({
                     error: err,
