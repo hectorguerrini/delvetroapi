@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import { Request, Response} from 'express';
 import { DAO } from './DAO';
 import { Combo } from './models/combo';

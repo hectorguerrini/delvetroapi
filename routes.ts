@@ -1,16 +1,18 @@
 import { Router } from 'express';
 import { Cadastros } from './cadastros';
 import { DAO } from "./DAO";
+import { Vendas } from './vendas';
 export class Routes {
     public router: Router;
     private DAO: DAO;    
     private cadastroCtrl: Cadastros;
+    private vendasCtrl: Vendas;
     constructor(){
         this.router = Router();
         this.Rotas();
         this.DAO = new DAO();
         this.cadastroCtrl = new Cadastros(this.DAO);
-
+        this.vendasCtrl = new Vendas(this.DAO);
     }
     // Função de configuração das rotas
     Rotas(): void {
@@ -24,6 +26,8 @@ export class Routes {
         this.router.get('/servico/:ID', (req, res) => this.cadastroCtrl.getCadastroServico(req, res));
         this.router.get('/estoque/:ID', (req, res) => this.cadastroCtrl.getCadastroEstoque(req, res));
         this.router.get('/produto/:ID', (req, res) => this.cadastroCtrl.getCadastroProduto(req, res));
+        this.router.get('/listaVendas/:ID', (req, res) => this.vendasCtrl.getListaVenda(req, res));
+        this.router.get('/venda/:ID', (req, res) => this.vendasCtrl.getVenda(req, res));
 
         //POST
         this.router.post('/cliente', (req, res) => this.cadastroCtrl.salvarCliente(req, res));
@@ -31,6 +35,7 @@ export class Routes {
         this.router.post('/estoque', (req, res) => this.cadastroCtrl.salvarEstoque(req, res));
         this.router.post('/produto', (req, res) => this.cadastroCtrl.salvarProduto(req, res));
         this.router.post('/beneficiado', (req, res) => this.cadastroCtrl.salvarBeneficiado(req, res));
+        this.router.post('/venda', (req, res) => this.vendasCtrl.salvarVenda(req, res));
     }
     
 }
