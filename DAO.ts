@@ -1,17 +1,7 @@
 import { ConnectionPool, config, IRecordSet } from 'mssql';
+import { configDev} from './models/config';
 export class DAO {
-    private configDev: config = {
-        user: 'node',
-        password: 'nodeadmin',
-        server: 'AIRFORCEONE\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
-        database: 'del_vetro',
-        parseJSON: true,   
-        pool: {
-            max: 20,
-            min: 0,
-            idleTimeoutMillis: 30000
-        }
-    }
+    private configDev = configDev;
     constructor(){}
 
     queryDB<Entity>(query: string, callback: (err?: Error, recordset?: IRecordSet<Entity>) => void){
