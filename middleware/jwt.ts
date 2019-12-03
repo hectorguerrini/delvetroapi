@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { verify, sign } from "jsonwebtoken";
 import { jwtSecret } from "../models/config";
 
+
 export class Jwt {
 
     constructor() { }
@@ -12,7 +13,7 @@ export class Jwt {
         const token = <string>(req.headers.authorization ? req.headers.authorization.split(' ')[1] : '');
         let jwtPayload;
         console.log('token:', token);
-
+        
         //Try to validate the token and get data
         try {
             jwtPayload = <any>verify(token, jwtSecret);
@@ -41,7 +42,7 @@ export class Jwt {
     };
     public static refreshToken(req: Request, res: Response, next: NextFunction) {
         //Get the jwt token from the head
-        const token = <string>(req.headers.authorization ? req.headers.authorization.split(' ')[1] : '');
+        const token = req.body.refreshToken;
         let jwtPayload;
         console.log('token:', token);
         //Try to validate the token and get data
@@ -63,9 +64,9 @@ export class Jwt {
         //We want to send a new token on every request
         const { userId, username } = jwtPayload;
         const newToken = sign({ userId, username }, jwtSecret, {
-            expiresIn: "10m"
+            expiresIn: "2m"
         });
-        res.json({newToken: newToken});
+        res.json({accessToken: newToken});
 
         //Call the next middleware or controller
         next();
