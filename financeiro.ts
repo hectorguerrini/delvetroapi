@@ -67,8 +67,10 @@ export class Financeiro {
         })
     }
     public getListaDespesas(req: Request, res: Response): void {
+        console.log()
         const query = `
             EXEC sp_get_lista_despesas
+            @FILTROS = '${JSON.stringify(req.body)}'
             `;
         this.daoCtrl.queryDB<Tabela>(query, (err, result) => {
             if (err) {

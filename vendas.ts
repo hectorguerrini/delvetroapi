@@ -65,7 +65,8 @@ export class Vendas {
         venda = req.body;
         const query = `
             EXEC sp_update_cadastro_venda
-            @jsonVariable= '${JSON.stringify(venda)}'
+            @jsonVariable= '${JSON.stringify(venda)}',
+            @ID_FUNCIONARIO = ${res.locals.userId}
             `;
         this.daoCtrl.queryDB<Venda>(query, (err, result) => {
             if (err) {
