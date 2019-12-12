@@ -3,7 +3,7 @@ import { config } from "mssql"
 export const configDev: config = {
     user: 'node',
     password: 'nodeadmin',
-    server: 'AIRFORCEONE\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
+    server: 'DESKTOP-2HSO5CV\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
     database: 'del_vetro',
     parseJSON: true,   
     pool: {
