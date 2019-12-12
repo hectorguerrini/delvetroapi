@@ -35,12 +35,12 @@ export class Auth {
             if (result) {                
                 //Sing JWT, valid for 1 hour
                 const token = sign(
-                    { userId: result[0].ID_FUNCIONARIO, username: result[0].USUARIO },
+                    { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },
                     jwtSecret,
-                    { expiresIn: "2m" }
+                    { expiresIn: "1h" }
                 );
                 const refreshtoken = sign(
-                    { userId: result[0].ID_FUNCIONARIO, username: result[0].USUARIO },
+                    { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },
                     jwtSecret,
                     { expiresIn: "1h" }
                 );
