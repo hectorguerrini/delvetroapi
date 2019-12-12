@@ -307,15 +307,18 @@ export class Cadastros {
 			@TIPO_BENEFICIADO = '${beneficiado.TIPO_BENEFICIADO}',
 			@CPF = '${beneficiado.CPF}',
 			@CNPJ = '${beneficiado.CNPJ}',
-			@RAZAO_SOCIAL = '${beneficiado.RAZAO_SOCIAL}',
-			@ID_FUNCIONARIO = ${beneficiado.ID_FUNCIONARIO},
-			@RG = '${beneficiado.RG}',
-			@CARGO = '${beneficiado.CARGO}',
-			@SUPERVISOR = ${beneficiado.SUPERVISOR},
-			@USUARIO = '${beneficiado.USUARIO}',
-			@SENHA = ${beneficiado.SENHA},	
-			@SALARIO = ${beneficiado.SALARIO},
-			@DT_CONTRATACAO = '${beneficiado.DT_CONTRATACAO}'
+			@RAZAO_SOCIAL = '${beneficiado.RAZAO_SOCIAL}'
+            ${beneficiado.TIPO_BENEFICIADO === 'Funcionario' ? `
+                ,@ID_FUNCIONARIO = ${beneficiado.ID_FUNCIONARIO},
+                @RG = '${beneficiado.RG}',
+                @CARGO = '${beneficiado.CARGO}',
+                @SUPERVISOR = ${beneficiado.SUPERVISOR},
+                @USUARIO = '${beneficiado.USUARIO}',
+                @SENHA = ${beneficiado.SENHA},	
+                @SALARIO = ${beneficiado.SALARIO},
+                @DT_CONTRATACAO = '${beneficiado.DT_CONTRATACAO}'
+                
+                ` : ''}
 			`;
 
         this.daoCtrl.queryDB<Beneficiados>(query, (err, result) => {
@@ -334,6 +337,31 @@ export class Cadastros {
             } else {
                 res.json({
                     query: query
+                });
+            }
+        })
+    }
+    public getCadastroBeneficiado(req: Request, res: Response): void {
+        const query = `
+            EXEC sp_get_beneficiado
+            @ID_BENEFICIADO = ${req.params.ID}
+            `;
+        this.daoCtrl.queryDB<Produto>(query, (err, result) => {
+            if (err) {
+                console.dir({
+                    error: err,
+                    query: query
+                })      
+                return;
+            }
+            if (result){               
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query                    
                 });
             }
         })
