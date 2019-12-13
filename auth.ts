@@ -37,12 +37,12 @@ export class Auth {
                 const token = sign(
                     { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },
                     jwtSecret,
-                    { expiresIn: "1h" }
+                    { expiresIn: "4h" }
                 );
                 const refreshtoken = sign(
                     { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },
                     jwtSecret,
-                    { expiresIn: "1h" }
+                    { expiresIn: "4h" }
                 );
 
                 //Send the jwt in the response                
