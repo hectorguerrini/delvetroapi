@@ -59,7 +59,7 @@ export class Routes {
         this.router.post('/despesa', Jwt.checkJwt, (req, res) => this.financeiroCtrl.salvarDespesa(req, res));        
         this.router.post('/itens', Jwt.checkJwt, (req, res) => this.acompanhamentoCtrl.getItens(req, res));
         this.router.post('/itens/status', Jwt.checkJwt, (req, res) => this.acompanhamentoCtrl.updateStatusItens(req, res));
-        this.router.post('/itens/entrega', Jwt.checkJwt, (req, res) => this.utilitariosCtrl.gerarRelatorio(req,res));        
+        this.router.post('/itens/relatorio', Jwt.checkJwt, (req, res) => this.utilitariosCtrl.gerarRelatorio(req,res));        
         this.router.post('/login', (req, res) => this.authCtrl.login(req,res));        
         this.router.post('/refreshToken', Jwt.refreshToken);
 

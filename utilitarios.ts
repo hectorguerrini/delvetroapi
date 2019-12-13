@@ -17,24 +17,24 @@ export class Utilitarios {
     returnSizePercentH(percent: number): number {
         return this.pdfHeight * (percent / 100);
     }
-    public gerarPdf(path: string, itens: Array<Itens>, funcionario: string): Promise<string> {
+    public gerarPdf(path: string, itens: Array<Itens>, funcionario: string, dados: {tipo: string, ID: number, descricao: string }): Promise<string> {
         let promise = new Promise<string>((res, rej) => {
             // PDF size 595 X 842
             let pdf = new doc;
             const writeStream = createWriteStream(path);
             pdf.pipe(writeStream);
-            // pdf.page.margins = {bottom:0,top:0,left:0,right:0}
+            pdf.page.margins = {bottom:0,top:0,left:0,right:0}
             pdf.image('assets/logo2.png', this.returnSizePercentW(5), this.returnSizePercentH(4), { fit: [100, 100] });
 
             // Font Bold Titles
             pdf.font('Times-Bold');
 
-            pdf.fontSize(16).text(`Data/Hora Entrega: ${moment().format('DD/MM/YYYY hh:mm')}`, this.returnSizePercentW(0), this.returnSizePercentH(4), {
+            pdf.fontSize(16).text(`Data/Hora: ${moment().format('DD/MM/YYYY hh:mm')}`, this.returnSizePercentW(0), this.returnSizePercentH(4), {
                 width: this.pdfWidth,
                 align: 'center'
             });
-            pdf.fontSize(12).text('Dados Da Venda', this.returnSizePercentW(5), this.returnSizePercentH(15));
-            pdf.fontSize(12).text('Itens Da Venda', this.returnSizePercentW(5), this.returnSizePercentH(23));
+            pdf.fontSize(12).text(`Dados ${dados.tipo}`, this.returnSizePercentW(5), this.returnSizePercentH(15));
+            pdf.fontSize(12).text(`Itens ${dados.tipo}`, this.returnSizePercentW(5), this.returnSizePercentH(23));
             // Header Tabela
             pdf.fontSize(12).text('PRODUTO', this.returnSizePercentW(5), this.returnSizePercentH(26));
             pdf.fontSize(12).text('QTDE', this.returnSizePercentW(60), this.returnSizePercentH(26));
@@ -44,7 +44,12 @@ export class Utilitarios {
             // pdf.fontSize(16).text('Nº Pedido: 1002', this.returnSizePercentW(4), this.returnSizePercentH(4)+80);
             // Font Regular
             pdf.font('Times-Roman');
-            pdf.fontSize(10).text(`CLIENTE: ${itens[0].ID_CLIENTE} - ${itens[0].NM_CLIENTE}`, this.returnSizePercentW(5), this.returnSizePercentH(17));
+            if (dados.tipo === 'Venda'){
+                pdf.fontSize(10).text(`CLIENTE: ${dados.ID} - ${dados.descricao}`, this.returnSizePercentW(5), this.returnSizePercentH(17));
+            } else if (dados.tipo === 'Serviço') {
+                pdf.fontSize(10).text(`SERVIÇO: ${dados.ID} - ${dados.descricao}`, this.returnSizePercentW(5), this.returnSizePercentH(17));
+            }
+            
             pdf.fontSize(10).text(`FUNCIONARIO: ${funcionario.toUpperCase()}`, this.returnSizePercentW(5), this.returnSizePercentH(18.5));
 
             //Body Tabela
@@ -58,20 +63,50 @@ export class Utilitarios {
                 pdf.moveTo(this.returnSizePercentW(5), this.returnSizePercentH(hInicial + 2))
                     .lineTo(this.returnSizePercentW(100), this.returnSizePercentH(hInicial + 2)).dash(5, { space: 5 }).stroke();
                 hInicial += 3;                
-                if (hInicial >= 85) {
-                    pdf.addPage();
-                    hInicial = 4
+                if (hInicial >= 80) {
+                    pdf.fontSize(12).text('Assinatura Cliente,', this.returnSizePercentW(5), this.returnSizePercentH(hInicial + 6));
+
+                    pdf.moveTo(this.returnSizePercentW(25), this.returnSizePercentH(hInicial + 7))
+                        .lineTo(this.returnSizePercentW(60), this.returnSizePercentH(hInicial + 7)).dash(5, { space: 5 }).stroke();
+        
+                    pdf.fontSize(12).text('Data:____/____/____', this.returnSizePercentW(70), this.returnSizePercentH(hInicial + 6));
+                    pdf.addPage({margins: {bottom:0,top:0,left:0,right:0}});
+                    pdf.image('assets/logo2.png', this.returnSizePercentW(5), this.returnSizePercentH(4), { fit: [100, 100] });
+
+                    // Font Bold Titles
+                    pdf.font('Times-Bold');
+
+                    pdf.fontSize(16).text(`Data/Hora Entrega: ${moment().format('DD/MM/YYYY hh:mm')}`, this.returnSizePercentW(0), this.returnSizePercentH(4), {
+                        width: this.pdfWidth,
+                        align: 'center'
+                    });
+                    pdf.fontSize(12).text('Dados Da Venda', this.returnSizePercentW(5), this.returnSizePercentH(15));
+                    pdf.fontSize(12).text('Itens Da Venda', this.returnSizePercentW(5), this.returnSizePercentH(23));
+                    // Header Tabela
+                    pdf.fontSize(12).text('PRODUTO', this.returnSizePercentW(5), this.returnSizePercentH(26));
+                    pdf.fontSize(12).text('QTDE', this.returnSizePercentW(60), this.returnSizePercentH(26));
+                    pdf.fontSize(12).text('MEDIDAS', this.returnSizePercentW(70), this.returnSizePercentH(26));
+                    // pdf.fontSize(12).text('METROS', this.returnSizePercentW(85), this.returnSizePercentH(26), { width: this.returnSizePercentW(15) });
+
+                    // pdf.fontSize(16).text('Nº Pedido: 1002', this.returnSizePercentW(4), this.returnSizePercentH(4)+80);
+                    // Font Regular
+
+                    
+                    pdf.font('Times-Roman');
+                    pdf.fontSize(10).text(`CLIENTE: ${itens[0].ID_CLIENTE} - ${itens[0].NM_CLIENTE}`, this.returnSizePercentW(5), this.returnSizePercentH(17));
+                    pdf.fontSize(10).text(`FUNCIONARIO: ${funcionario.toUpperCase()}`, this.returnSizePercentW(5), this.returnSizePercentH(18.5));
+                    hInicial = 28
                 }
             });
             const qtde = itens.reduce((acc: number, cur) => acc + cur.QTDE,0);
             pdf.fontSize(10).text(`TOTAL DE PEÇAS: ${qtde}`, this.returnSizePercentW(5), this.returnSizePercentH(hInicial));
 
-            pdf.fontSize(12).text('Assinatura Cliente,', this.returnSizePercentW(5), this.returnSizePercentH(hInicial + 6));
+            pdf.fontSize(12).text('Assinatura,', this.returnSizePercentW(5), this.returnSizePercentH(hInicial + 6));
 
-            pdf.moveTo(this.returnSizePercentW(5), this.returnSizePercentH(hInicial + 12))
-                .lineTo(this.returnSizePercentW(40), this.returnSizePercentH(hInicial + 12)).dash(5, { space: 5 }).stroke();
+            pdf.moveTo(this.returnSizePercentW(15), this.returnSizePercentH(hInicial + 7))
+                .lineTo(this.returnSizePercentW(50), this.returnSizePercentH(hInicial + 7)).dash(5, { space: 5 }).stroke();
 
-            pdf.fontSize(12).text('Data:____/____/____', this.returnSizePercentW(5), this.returnSizePercentH(hInicial + 18));
+            pdf.fontSize(12).text('Data:____/____/____', this.returnSizePercentW(70), this.returnSizePercentH(hInicial + 6));
             pdf.end();
             writeStream.on('finish', () => { res(path.replace('C:/inetpub/wwwroot','http://192.168.1.159')); })
             
@@ -82,17 +117,20 @@ export class Utilitarios {
 
     public gerarRelatorio(req: Request, res: Response) {
         let itens: Array<Itens>;
-        itens = req.body;
-        console.log(itens)
-        const path = `${this.dirNameArquivos}/${itens[0].ID_CLIENTE}`;
+        itens = req.body.itens;
+        let dados: {tipo: string, ID: number, descricao: string };
+        dados = req.body.dados;
+        console.log(itens);
+        const path = `${this.dirNameArquivos}/${dados.tipo === 'Venda' ? dados.ID : dados.descricao.replace(' ','_')}`;
         existsSync(path) || mkdirSync(path);
-        this.gerarPdf(`${this.dirNameArquivos}/${itens[0].ID_CLIENTE}/${moment().format('DD-MM-YYYY-hh-mm')}.pdf`, itens, res.locals.nome)
+        this.gerarPdf(`${path}/${moment().format('DD-MM-YYYY-hh-mm')}.pdf`, itens, res.locals.nome, dados)
         .then(response => {
             res.json({status: true, path: response})
         }).catch(err => {
             res.json({status: false, path: ''})
-        })
-        
-
+        })        
     }
+    
+    
+
 }
