@@ -15,23 +15,6 @@ export class DAO {
             }).catch(err => {
                 callback(err, undefined);
             })
-
-        // const pool = new ConnectionPool(this.configDev,(err: any) => {
-        //     if (err) {
-        //         console.error("error connecting: " + err.stack);
-        //         callback(err);
-        //     }
-
-        //     const conn = new Request(pool);
-        //     conn.query(query, function (error, result) {
-        //         if (error) {
-        //             console.dir(error);
-        //             callback(error);                
-        //         }
-        //         callback(error, result)
-        //     });
-
-        // })
     }
     queryDBTable<Entity>(procedure: string,req: Request, callback: (err?: Error, recordset?: IProcedureResult<Entity>) => void){
 
@@ -49,21 +32,6 @@ export class DAO {
                 callback(err, undefined);
             })
 
-        // const pool = new ConnectionPool(this.configDev,(err: any) => {
-        //     if (err) {
-        //         console.error("error connecting: " + err.stack);
-        //         callback(err);
-        //     }
 
-        //     const conn = new Request(pool);
-        //     conn.query(query, function (error, result) {
-        //         if (error) {
-        //             console.dir(error);
-        //             callback(error);                
-        //         }
-        //         callback(error, result)
-        //     });
-
-        // })
     }
 }
