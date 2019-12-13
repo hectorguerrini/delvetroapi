@@ -65,7 +65,7 @@ export class Jwt {
         //We want to send a new token on every request
         const { userId, nome } = jwtPayload;
         const newToken = sign({ userId, nome }, jwtSecret, {
-            expiresIn: "30h"
+            expiresIn: "4h"
         });
         res.json({accessToken: newToken});
 
