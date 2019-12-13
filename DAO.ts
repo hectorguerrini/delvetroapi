@@ -10,8 +10,7 @@ export class DAO {
         const pool =  new ConnectionPool(this.configDev).connect()
             .then(pool => {
                 return pool.request().query(query);
-            }).then(result => {
-                console.log(result.output);
+            }).then(result => {                
                 callback(undefined, result.recordset);
             }).catch(err => {
                 callback(err, undefined);
