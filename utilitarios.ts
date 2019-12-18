@@ -5,6 +5,7 @@ import doc from 'pdfkit';
 import { createWriteStream, mkdirSync, existsSync } from "fs";
 import { Itens } from "./models/itens";
 import moment from 'moment';
+import { IncomingForm } from "formidable";
 export class Utilitarios {
     private pdfWidth: number = 595;
     private pdfHeight: number = 842;
@@ -132,5 +133,40 @@ export class Utilitarios {
     }
     
     
+    public uploadFile(req: Request, res: Response) {    
+        var form = new IncomingForm();
+        form.on('fileBegin', function (name, file){
+            const dirNameArquivos: string = "C:/inetpub/wwwroot/arquivos/itens";
+            file.path = `${dirNameArquivos}/${req.params.ID_CLIENTE}`;                    
+            existsSync(file.path) || mkdirSync(file.path);     
+            file.name = `${req.params.ID_ITEM_VENDIDO}.${file.type.replace('image/','')}`;
+            file.path = `${file.path}/${file.name}`;
+        });
+        form.on('file', (field, file) => {     
+            console.log('Uploaded ' + file.name);       
+            const query = `UPDATE DV_ITENS_VENDIDOS SET ARQUIVO_DESENHO = '${file.name}' WHERE ID_ITEM_VENDIDO = ${req.params.ID_ITEM_VENDIDO}`;
+            this.daoCtrl.queryDB<any>(query, (err, result) => {
+                if (err) {
+                    console.dir({
+                        error: err,
+                        query: query
+                    })      
+                    return;
+                }
+                if (result){                
+                    console.log(result);
+                    res.json({
+                        query: query,
+                        json: result
+                    });
+                } else {
+                    res.json({
+                        query: query                    
+                    });
+                }
+            })
+        }) 
+        form.parse(req)           
+    }
 
 }

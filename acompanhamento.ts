@@ -48,4 +48,25 @@ export class Acompanhamento {
             }
         })
     }   
+    public getTrackingItem(req: Request, res: Response): void {
+
+        const query = `SELECT * FROM DV_LOG_ITENS_VENDIDOS WHERE ID_VENDIDO = ${req.params.ID}`;
+
+        this.daoCtrl.queryDB<any>(query, (err, result) => {
+            if (err) {
+                console.dir(err);
+                return;
+            }
+            if (result){
+                res.json({
+                    query: query,
+                    json: result
+                });
+            } else {
+                res.json({
+                    query: query                    
+                });
+            }
+        })
+    }
 }
