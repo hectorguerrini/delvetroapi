@@ -45,7 +45,8 @@ export class Routes {
         this.router.get('/detalhesVenda/:ID_CLIENTE/:ID_VENDA', Jwt.checkJwt, (req, res) => this.vendasCtrl.getVendaRecebimento(req, res));
         this.router.get('/despesa/:ID', Jwt.checkJwt, (req, res) => this.financeiroCtrl.getDespesa(req, res));        
         this.router.get('/listUsers', Jwt.checkJwt,(req, res) => this.authCtrl.listUsers(req,res));        
-        this.router.get('/itens/tracking/:ID', Jwt.checkJwt,(req, res) => this.acompanhamentoCtrl.getTrackingItem(req,res));        
+		this.router.get('/itens/tracking/:ID', Jwt.checkJwt,(req, res) => this.acompanhamentoCtrl.getTrackingItem(req,res));
+		this.router.get('/acompanhamento/estoque/log/:ID', Jwt.checkJwt, (req, res) => this.acompanhamentoCtrl.getLogEstoque(req, res));
         //POST
         this.router.post('/cliente', Jwt.checkJwt, (req, res) => this.cadastroCtrl.salvarCliente(req, res));
         this.router.post('/servico', Jwt.checkJwt, (req, res) => this.cadastroCtrl.salvarServico(req, res));
@@ -61,6 +62,8 @@ export class Routes {
         this.router.post('/itens/status', Jwt.checkJwt, (req, res) => this.acompanhamentoCtrl.updateStatusItens(req, res));
         this.router.post('/itens/relatorio', Jwt.checkJwt, (req, res) => this.utilitariosCtrl.gerarRelatorio(req,res));        
         this.router.post('/itens/upload/:ID_CLIENTE/:ID_ITEM_VENDIDO', Jwt.checkJwt, (req, res) => this.utilitariosCtrl.uploadFile(req,res));        
+		this.router.post('/acompanhamento/estoque', Jwt.checkJwt, (req, res) => this.acompanhamentoCtrl.getEstoque(req, res));
+		this.router.post('/acompanhamento/estoque/qtde', Jwt.checkJwt, (req, res) => this.acompanhamentoCtrl.updateQtdeEstoque(req, res));		
         this.router.post('/login', (req, res) => this.authCtrl.login(req,res));        
         this.router.post('/refreshToken', Jwt.refreshToken);
 

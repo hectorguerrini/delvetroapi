@@ -32,7 +32,8 @@ export class Auth {
                 });
                 return;
             }
-            if (result) {                
+            if (result) {                         
+				console.dir('Result: ',result)
                 //Sing JWT, valid for 1 hour
                 const token = sign(
                     { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },

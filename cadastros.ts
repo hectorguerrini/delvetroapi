@@ -16,7 +16,7 @@ export class Cadastros {
     public getCombo(req: Request, res: Response): void {
 
         const query = `EXEC sp_get_combo @COMBO='${req.params.tipo}'`;
-
+		console.dir(`User: ${res.locals.userId}` );
         this.daoCtrl.queryDB<Combo>(query, (err, result) => {
             if (err) {
                 console.dir(err);
@@ -65,8 +65,8 @@ export class Cadastros {
         let estoque: Estoque;
         estoque = req.body;          
         const query = `
-            EXEC sp_update_cadastro_estoque
-            @ID_ESTOQUE = ${estoque.ID_ESTOQUE},
+			EXEC sp_update_cadastro_estoque
+			@ID_ESTOQUE = ${estoque.ID_ESTOQUE},
             @ID_TIPO = '${estoque.ID_TIPO}',
             @DESCRICAO = '${estoque.DESCRICAO}',
             @QTDE = ${estoque.QTDE},
@@ -75,7 +75,8 @@ export class Cadastros {
             @ESTOQUE_MIN = ${estoque.ESTOQUE_MIN},
             @ESTOQUE_MAX = ${estoque.ESTOQUE_MAX},
             @CUSTO_ULTIMO_RECEBIMENTO = ${estoque.CUSTO_ULTIMO_RECEBIMENTO},
-            @ESPESSURA = ${estoque.ESPESSURA}
+			@ESPESSURA = ${estoque.ESPESSURA},
+			@ID_FUNCIONARIO = ${res.locals.userId}
             `;
 
         this.daoCtrl.queryDB<Estoque>(query, (err, result) => {
@@ -312,9 +313,9 @@ export class Cadastros {
                 ,@ID_FUNCIONARIO = ${beneficiado.ID_FUNCIONARIO},
                 @RG = '${beneficiado.RG}',
                 @CARGO = '${beneficiado.CARGO}',
-                @SUPERVISOR = ${beneficiado.SUPERVISOR},
+                @SUPERVISOR = '${beneficiado.SUPERVISOR}',
                 @USUARIO = '${beneficiado.USUARIO}',
-                @SENHA = ${beneficiado.SENHA},	
+                @SENHA = '${beneficiado.SENHA}',	
                 @SALARIO = ${beneficiado.SALARIO},
                 @DT_CONTRATACAO = '${beneficiado.DT_CONTRATACAO}'
                 
