@@ -12,7 +12,7 @@ export class Jwt {
         //Get the jwt token from the head
         const token = <string>(req.headers.authorization ? req.headers.authorization.split(' ')[1] : '');
         let jwtPayload;        
-        
+        console.log(req.headers);
         //Try to validate the token and get data
         try {
             jwtPayload = <any>verify(token, jwtSecret);

@@ -38,7 +38,7 @@ export class Auth {
                 const token = sign(
                     { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },
                     jwtSecret,
-                    { expiresIn: "4h" }
+                    { expiresIn: "10m" }
                 );
                 const refreshtoken = sign(
                     { userId: result[0].ID_FUNCIONARIO, nome: result[0].NM_FUNCIONARIO },
