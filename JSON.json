@@ -56,19 +56,5 @@
         "VL_TOTAL": 12.80,
         "VL_UNIDADE": 40.00,
         "EXTRAS": null
-    }, {
-        "ID_ITEM_VENDIDO": 4,
-        "ID_PRODUTO": 3,
-        "NM_PRODUTO": "SILICONE",
-        "QTDE": 2,
-        "AREA": null,
-        "AREA_CONSIDERADA": null,
-        "ALTURA": null,
-        "ALTURA_CONSIDERADA": null,
-        "LARGURA": null,
-        "LARGURA_CONSIDERADA": null,
-        "VL_TOTAL": 80.00,
-        "VL_UNIDADE": 40.00,
-        "EXTRAS": null
     }]
 }
