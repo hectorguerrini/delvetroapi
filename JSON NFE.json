@@ -7,7 +7,7 @@
     "ambiente": 2,
     "cliente": { //obrigatorio
         "cnpj": "",//
-        "razao_social": "",//
+        "razao_social": "",
         "endereco": "Av. Brg. Faria Lima",//
         "numero": 1000,//
         "bairro": "Itaim Bibi",//
