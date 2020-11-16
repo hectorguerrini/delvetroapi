@@ -1,0 +1,55 @@
+{
+    "ID": 1137,
+    "operacao": 1,
+    "natureza_operacao": "Venda de produção do estabelecimento",
+    "modelo": 1,
+    "finalidade": 1,
+    "ambiente": 2,
+    "cliente": { //obrigatorio
+        "cnpj": "",//
+        "razao_social": "",//
+        "endereco": "Av. Brg. Faria Lima",//
+        "numero": 1000,//
+        "bairro": "Itaim Bibi",//
+        "cidade": "São Paulo",//
+        "uf": "SP",//tem que pegar
+        "cep": "00000-000",//
+        "email": "nome@email.com"//
+    },
+    "produtos": [ //obrigatorio
+        {
+            "nome": "Nome do produto",//DV_PRODUTO
+            "codigo": "nome-do-produto",//DV_PRODUTO
+            "ncm": "6109.10.00",//PRECISA PEGAR DA TABELA NCM
+            "quantidade": 3,//DV_ITENS VENDIDOS
+            "unidade": "UN",//UN
+            "peso": "0.800",//PRECISA CALCULAR
+            "origem": 0,//FIXO
+            "subtotal": "44.90",//
+            "total": "134.70",//SUBTOTAL x QUANTIDADE
+            "classe_imposto": "REF1000"//
+        },
+        {
+            "nome": "Nome do produto",
+            "codigo": "nome-do-produto",
+            "ncm": "6109.10.00",
+            "cest": "28.038.00",
+            "quantidade": "1",
+            "unidade": "UN",
+            "peso": "0.200",
+            "origem": 0,
+            "subtotal": "29.90",
+            "total": "29.90",
+            "classe_imposto": "REF1000"
+        }
+    ],
+    "pedido": { //obrigatorio
+        "presenca": 1,
+        "modalidade_frete": 4,
+        "frete": "0",
+        "desconto": "0",
+        "total": "174.60",
+        "pagamento": 0,
+        "forma_pagamento":"01"
+    }
+}

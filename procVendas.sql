@@ -41,10 +41,10 @@ order by credito desc
 
 select 
 caixa.con_codigo,con_nome,sum(cai_credito)credito,sum(cai_debito)debito,min(cai_data) primeiraCompra,
-case when datediff(month,min(cai_data),CURRENT_DATE) = 0 
+case when datediff(month,min(cai_data),'CURRENT_DATE') = 0 
 then sum(cai_credito)
 else
-    sum(cai_credito)/datediff(month,min(cai_data),CURRENT_DATE) 
+    sum(cai_credito)/datediff(month,min(cai_data),'CURRENT_DATE') 
 end as creditoMes
 from caixa 
 inner join contatos on contatos.con_codigo = caixa.con_codigo
@@ -64,13 +64,13 @@ AND cai_pagamento IS NOT NULL
 GROUP BY caixa.con_codigo,con_nome
 ORDER BY credito DESC
 
-select extract(year from cai_pagamento) || '/' || right('0'||extract(month from cai_pagamento),2) AS mes,
-sum(cai_credito)valorCredito
-from caixa
-where con_codigo = 11836
-and cai_pagamento is not null and cai_categoria in ('VENDA','SERVICOS')
-group by mes
-order by mes
+-- select extract(year from cai_pagamento) || '/' || right('0'||extract(month from cai_pagamento),2) AS mes,
+-- sum(cai_credito)valorCredito
+-- from caixa
+-- where con_codigo = 11836
+-- and cai_pagamento is not null and cai_categoria in ('VENDA','SERVICOS')
+-- group by mes
+-- order by mes
 
 select 'Pago'label,
 sum(cai_credito)valor

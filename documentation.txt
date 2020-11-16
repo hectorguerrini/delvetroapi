@@ -1,0 +1,29 @@
+GET:
+    /delvetroapi/
+
+    /delvetroapi/cadastro/:tipo/:ID
+        cliente
+        beneficiado
+        servico
+        estoque
+        vendas
+
+    /delvetroapi/combo/:tipo
+        clientes
+        tipo_estoque
+        tipo_servicos
+        beneficiados
+        servicos
+        estoque
+        produtos
+        produtos_vendas
+        formas_pagamentos
+
+POST:
+    /delvetroapi/cadastro/:tipo
+        venda
+        cliente
+        estoque
+        servico
+        beneficiado
+        produto     
